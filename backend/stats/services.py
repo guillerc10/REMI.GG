@@ -68,3 +68,88 @@ def sincronizar_invocador(game_name, tag_line):
         )
 
     return invocador
+
+
+
+def obtener_match_ids(puuid, count=10):
+    url = f"{HOST_REGIONAL}/lol/match/v5/matches/by-puuid/{puuid}/ids"
+    params = {"count": count}
+    response = requests.get(url, headers=HEADERS, params=params)
+    response.raise_for_status()
+    return response.json()  # lista de match_ids, ej: ["LA1_123456789", ...]
+
+
+def obtener_detalle_partida(match_id):
+    url = f"{HOST_REGIONAL}/lol/match/v5/matches/{match_id}"
+    response = requests.get(url, headers=HEADERS)
+    response.raise_for_status()
+    return response.json()  # objeto completo con info + metadata
+
+
+def guardar_campeon(champion_id, champion_name):
+    campeon, _ = Campeon.objects.update_or_create(
+        champion_id=champion_id,
+        defaults={"nombre": champion_name},
+    )
+    return campeon
+
+
+def sincronizar_partida(match_id):
+    """
+    Trae el detalle de una partida, la guarda junto con sus 10 participantes.
+    Si la partida ya existe, no la duplica.
+    """
+    if Partida.objects.filter(match_id=match_id).exists():
+        return Partida.objects.get(match_id=match_id)
+
+    data = obtener_detalle_partida(match_id)
+    info = data["info"]
+
+    partida = Partida.objects.create(
+        match_id=match_id,
+        fecha=timezone.datetime.fromtimestamp(info["gameStartTimestamp"] / 1000, tz=timezone.UTC),        duracion_segundos=info["gameDuration"],
+        modo_juego=info["gameMode"],
+    )
+
+    for p in info["participants"]:
+        campeon = guardar_campeon(p["championId"], p["championName"])
+
+        # Solo creamos el Invocador si no existe (participantes que no hemos sincronizado antes)
+        invocador, _ = Invocador.objects.get_or_create(
+            puuid=p["puuid"],
+            defaults={
+                "riot_id": f"{p['riotIdGameName']}#{p['riotIdTagline']}",
+                "game_name": p["riotIdGameName"],
+                "tag_line": p["riotIdTagline"],
+                "summoner_level": p["summonerLevel"],
+                "profile_icon_id": p["profileIcon"],
+            },
+        )
+
+        Participante.objects.update_or_create(
+            partida=partida,
+            invocador=invocador,
+            defaults={
+                "campeon": campeon,
+                "kills": p["kills"],
+                "deaths": p["deaths"],
+                "assists": p["assists"],
+                "win": p["win"],
+                "team_id": p["teamId"],
+            },
+        )
+
+    return partida
+
+
+def sincronizar_historial(game_name, tag_line, count=10):
+    """
+    Sincroniza el invocador y sus últimas `count` partidas.
+    """
+    invocador = sincronizar_invocador(game_name, tag_line)
+    match_ids = obtener_match_ids(invocador.puuid, count=count)
+
+    for match_id in match_ids:
+        sincronizar_partida(match_id)
+
+    return invocador
