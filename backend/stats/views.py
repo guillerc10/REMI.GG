@@ -12,7 +12,6 @@ from .analytics import (
     companeros_frecuentes,
 )
 
-
 def _obtener_invocador_o_sincronizar(game_name, tag_line):
     riot_id = f"{game_name}#{tag_line}"
     try:
@@ -22,15 +21,16 @@ def _obtener_invocador_o_sincronizar(game_name, tag_line):
             invocador = sincronizar_historial(game_name, tag_line, count=10)
             return invocador, None
         except requests.exceptions.HTTPError as e:
+            print(f"[ERROR Riot API] Status: {e.response.status_code} - {e.response.text}")
             if e.response.status_code == 404:
                 return None, Response(
                     {"error": f"No se encontró el invocador {riot_id}"},
                     status=status.HTTP_404_NOT_FOUND,
                 )
             return None, Response(
-                {"error": "Error al consultar Riot API"},
+                {"error": f"Error al consultar Riot API (status {e.response.status_code})"},
                 status=status.HTTP_502_BAD_GATEWAY,
-            )   
+            )
 
 @api_view(["GET"])
 def perfil_invocador(request, game_name, tag_line):
@@ -90,4 +90,37 @@ def companeros_invocador(request, game_name, tag_line):
     invocador, error = _obtener_invocador_o_sincronizar(game_name, tag_line)
     if error:
         return error
-    return Response(companeros_frecuentes(invocador))
+    return Response(companeros_frecuentes(invocador))   
+@api_view(["GET"])
+def comparar_invocadores(request):
+    game_name_1 = request.GET.get("game_name_1")
+    tag_line_1 = request.GET.get("tag_line_1")
+    game_name_2 = request.GET.get("game_name_2")
+    tag_line_2 = request.GET.get("tag_line_2")
+
+    if not all([game_name_1, tag_line_1, game_name_2, tag_line_2]):
+        return Response(
+            {"error": "Faltan parámetros: game_name_1, tag_line_1, game_name_2, tag_line_2"},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
+
+    inv1, error1 = _obtener_invocador_o_sincronizar(game_name_1, tag_line_1)
+    if error1:
+        return error1
+
+    inv2, error2 = _obtener_invocador_o_sincronizar(game_name_2, tag_line_2)
+    if error2:
+        return error2
+
+    return Response({
+        "jugador_1": {
+            "riot_id": inv1.riot_id,
+            "winrate": calcular_winrate(inv1),
+            "kda": calcular_kda_promedio(inv1),
+        },
+        "jugador_2": {
+            "riot_id": inv2.riot_id,
+            "winrate": calcular_winrate(inv2),
+            "kda": calcular_kda_promedio(inv2),
+        },
+    })
