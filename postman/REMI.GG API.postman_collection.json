@@ -1,0 +1,257 @@
+{
+  "info": {
+    "_postman_id": "86e58eb6-f5db-4f73-b5bd-c05faf1ef78a",
+    "name": "REMI.GG API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "57830633",
+    "_collection_link": "https://go.postman.co/collection/57830633-86e58eb6-f5db-4f73-b5bd-c05faf1ef78a?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "Invocador",
+      "item": [
+        {
+          "name": "Perfil Invocador.",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code es 200\", function () {\n    pm.response.to.have.status(200);\n});\n\npm.test(\"Respuesta tiene riot_id\", function () {\n    const data = pm.response.json();\n    pm.expect(data).to.have.property(\"riot_id\");\n    pm.expect(data).to.have.property(\"summoner_level\");\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/invocador/{{game_name}}/{{tag_line}}/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "invocador",
+                "{{game_name}}",
+                "{{tag_line}}",
+                ""
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Liga Invocador.",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code es 200\", function () {\n    pm.response.to.have.status(200);\n});\n\npm.test(\"Respuesta es un array\", function () {\n    pm.expect(pm.response.json()).to.be.an(\"array\");\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/invocador/{{game_name}}/{{tag_line}}/ligas/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "invocador",
+                "{{game_name}}",
+                "{{tag_line}}",
+                "ligas",
+                ""
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "WINRATE INVOCADOR",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code es 200\", function () {\n    pm.response.to.have.status(200);\n});\n\npm.test(\"Winrate está entre 0 y 100\", function () {\n    const data = pm.response.json();\n    pm.expect(data.winrate).to.be.at.least(0);\n    pm.expect(data.winrate).to.be.at.most(100);\n});\n\npm.test(\"Victorias + derrotas = total\", function () {\n    const data = pm.response.json();\n    pm.expect(data.victorias + data.derrotas).to.eql(data.total);\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/invocador/{{game_name}}/{{tag_line}}/winrate/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "invocador",
+                "{{game_name}}",
+                "{{tag_line}}",
+                "winrate",
+                ""
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "KDA Invocador.",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code es 200\", function () {\n    pm.response.to.have.status(200);\n});\n\npm.test(\"Todos los promedios son números no negativos\", function () {\n    const data = pm.response.json();\n    pm.expect(data.kills_prom).to.be.at.least(0);\n    pm.expect(data.deaths_prom).to.be.at.least(0);\n    pm.expect(data.assists_prom).to.be.at.least(0);\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/invocador/{{game_name}}/{{tag_line}}/kda/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "invocador",
+                "{{game_name}}",
+                "{{tag_line}}",
+                "kda",
+                ""
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Campeones Invocador.",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code es 200\", function () {\n    pm.response.to.have.status(200);\n});\n\npm.test(\"Cada campeón tiene los campos esperados\", function () {\n    const data = pm.response.json();\n    data.forEach(function (item) {\n        pm.expect(item).to.have.all.keys(\"campeon\", \"partidas\", \"victorias\", \"winrate\");\n    });\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/invocador/{{game_name}}/{{tag_line}}/campeones/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "invocador",
+                "{{game_name}}",
+                "{{tag_line}}",
+                "campeones",
+                ""
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Companeros Invocador.",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code es 200\", function () {\n    pm.response.to.have.status(200);\n});\n\npm.test(\"Ordenado de mayor a menor partidas jugadas juntos\", function () {\n    const data = pm.response.json();\n    for (let i = 0; i < data.length - 1; i++) {\n        pm.expect(data[i].partidas).to.be.at.least(data[i + 1].partidas);\n    }\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/invocador/{{game_name}}/{{tag_line}}/companeros/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "invocador",
+                "{{game_name}}",
+                "{{tag_line}}",
+                "companeros",
+                ""
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Casos Invalidos",
+      "item": [
+        {
+          "name": "Invocador Inexistente",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"No debería devolver 200 para un invocador inexistente\", function () {\n    pm.expect(pm.response.code).to.not.eql(200);\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/invocador/asdkjaskjd12345/XX/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "invocador",
+                "asdkjaskjd12345",
+                "XX",
+                ""
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": ""
+    },
+    {
+      "key": "game_name",
+      "value": ""
+    },
+    {
+      "key": "tag_line",
+      "value": ""
+    }
+  ]
+}
