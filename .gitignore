@@ -1,0 +1,19 @@
+# Python
+.venv/
+__pycache__/
+*.pyc
+
+# Env
+.env
+
+# Node / React
+node_modules/
+dist/
+build/
+
+# Editor / OS
+.vscode/
+.DS_Store
+
+# Postman
+newman/
