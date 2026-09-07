@@ -53,6 +53,31 @@ class Participante(models.Model):
     assists = models.IntegerField(default=0)
     win = models.BooleanField(default=False)
     team_id = models.IntegerField()  # 100 o 200
+    role = models.CharField(max_length=20, default="")  # TOP, JUNGLE, MIDDLE, BOTTOM, UTILITY
+
+    # Nuevo: items (7 slots, incluyendo trinket)
+    item0 = models.IntegerField(default=0)
+    item1 = models.IntegerField(default=0)
+    item2 = models.IntegerField(default=0)
+    item3 = models.IntegerField(default=0)
+    item4 = models.IntegerField(default=0)
+    item5 = models.IntegerField(default=0)
+    item6 = models.IntegerField(default=0)  # trinket
+
+    # Nuevo: hechizos de invocador
+    summoner1_id = models.IntegerField(default=0)
+    summoner2_id = models.IntegerField(default=0)
+
+    # Nuevo: runas (solo las principales, para simplificar)
+    runa_principal = models.IntegerField(default=0)  # keystone
+    runa_secundaria = models.IntegerField(default=0)  # árbol secundario
+
+    # Nuevo: CS y otros datos útiles para badges
+    cs_total = models.IntegerField(default=0)
+    doble_kills = models.IntegerField(default=0)
+    triple_kills = models.IntegerField(default=0)
+    quadra_kills = models.IntegerField(default=0)
+    penta_kills = models.IntegerField(default=0)
 
     class Meta:
         unique_together = ("partida", "invocador")

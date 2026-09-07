@@ -34,5 +34,8 @@ export const compararInvocadores = (gameName1, tagLine1, gameName2, tagLine2) =>
       tag_line_2: tagLine2,
     },
   });
-  
+
 export default api; 
+
+export const getHistorial = (gameName, tagLine) =>
+  api.get(`/invocador/${gameName}/${tagLine}/historial/`);
