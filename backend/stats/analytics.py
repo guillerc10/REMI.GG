@@ -118,3 +118,117 @@ def companeros_frecuentes(invocador):
 
     resultado.sort(key=lambda x: x["partidas"], reverse=True)
     return resultado
+
+def calcular_badges(participante):
+    """
+    Devuelve una lista de badges (etiquetas) para una participación específica,
+    basados en su desempeño en esa partida.
+    """
+    badges = []
+
+    if participante.penta_kills > 0:
+        badges.append("PENTAKILL")
+    elif participante.quadra_kills > 0:
+        badges.append("QUADRA KILL")
+    elif participante.triple_kills > 0:
+        badges.append("TRIPLE KILL")
+    elif participante.doble_kills > 0:
+        badges.append("DOBLE KILL")
+
+    # MVP: el mejor KDA de su propio equipo en esa partida
+    companeros_equipo = Participante.objects.filter(
+        partida=participante.partida,
+        team_id=participante.team_id,
+    )
+
+    def kda_score(p):
+        return (p.kills + p.assists) / max(p.deaths, 1)
+
+    mejor_del_equipo = max(companeros_equipo, key=kda_score)
+    if mejor_del_equipo.id == participante.id:
+        badges.append("MVP")
+
+    return badges   
+
+def historial_partidas(invocador, limite=10):
+    """
+    Devuelve una lista de las últimas partidas del invocador, con detalle completo
+    para mostrar en el historial visual.
+    """
+    participaciones = (
+        Participante.objects
+        .filter(invocador=invocador)
+        .select_related("partida", "campeon")
+        .order_by("-partida__fecha")[:limite]
+    )
+
+    resultado = []
+    for p in participaciones:
+        resultado.append({
+            "match_id": p.partida.match_id,
+            "fecha": p.partida.fecha,
+            "duracion_segundos": p.partida.duracion_segundos,
+            "modo_juego": p.partida.modo_juego,
+            "campeon": p.campeon.nombre if p.campeon else None,
+            "kills": p.kills,
+            "deaths": p.deaths,
+            "assists": p.assists,
+            "win": p.win,
+            "cs_total": p.cs_total,
+            "items": [p.item0, p.item1, p.item2, p.item3, p.item4, p.item5, p.item6],
+            "summoner1_id": p.summoner1_id,
+            "summoner2_id": p.summoner2_id,
+            "badges": calcular_badges(p),
+        })
+
+    return resultado
+
+def detalle_partida(match_id):
+    """
+    Devuelve el detalle completo de una partida: los 10 participantes,
+    agrupados por equipo, con score total por equipo.
+    """
+    from .models import Partida
+
+    try:
+        partida = Partida.objects.get(match_id=match_id)
+    except Partida.DoesNotExist:
+        return None
+
+    participantes = (
+        Participante.objects
+        .filter(partida=partida)
+        .select_related("invocador", "campeon")
+        .order_by("team_id")
+    )
+
+    equipos = {100: [], 200: []}
+    score = {100: {"kills": 0, "deaths": 0, "assists": 0}, 200: {"kills": 0, "deaths": 0, "assists": 0}}
+
+    for p in participantes:
+        equipos[p.team_id].append({
+            "riot_id": p.invocador.riot_id,
+            "campeon": p.campeon.nombre if p.campeon else None,
+            "role": p.role,
+            "kills": p.kills,
+            "deaths": p.deaths,
+            "assists": p.assists,
+            "cs_total": p.cs_total,
+            "items": [p.item0, p.item1, p.item2, p.item3, p.item4, p.item5, p.item6],
+            "summoner1_id": p.summoner1_id,
+            "summoner2_id": p.summoner2_id,
+            "win": p.win,
+            "badges": calcular_badges(p),
+        })
+        score[p.team_id]["kills"] += p.kills
+        score[p.team_id]["deaths"] += p.deaths
+        score[p.team_id]["assists"] += p.assists
+
+    return {
+        "match_id": partida.match_id,
+        "fecha": partida.fecha,
+        "duracion_segundos": partida.duracion_segundos,
+        "modo_juego": partida.modo_juego,
+        "equipo_100": {"jugadores": equipos[100], "score": score[100]},
+        "equipo_200": {"jugadores": equipos[200], "score": score[200]},
+    }

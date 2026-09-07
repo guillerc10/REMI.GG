@@ -12,6 +12,15 @@ from .analytics import (
     companeros_frecuentes,
 )
 
+from .analytics import (
+    calcular_winrate,
+    calcular_kda_promedio,
+    stats_por_campeon,
+    companeros_frecuentes,
+    historial_partidas,
+    detalle_partida,
+)
+
 def _obtener_invocador_o_sincronizar(game_name, tag_line):
     riot_id = f"{game_name}#{tag_line}"
     try:
@@ -123,4 +132,18 @@ def comparar_invocadores(request):
             "winrate": calcular_winrate(inv2),
             "kda": calcular_kda_promedio(inv2),
         },
-    })
+    })  
+
+@api_view(["GET"])
+def historial_invocador(request, game_name, tag_line):
+    invocador, error = _obtener_invocador_o_sincronizar(game_name, tag_line)
+    if error:
+        return error
+    return Response(historial_partidas(invocador))
+
+@api_view(["GET"])
+def partida_detalle(request, match_id):
+    detalle = detalle_partida(match_id)
+    if detalle is None:
+        return Response({"error": "Partida no encontrada"}, status=status.HTTP_404_NOT_FOUND)
+    return Response(detalle)
