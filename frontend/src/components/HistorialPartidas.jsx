@@ -2,7 +2,7 @@ import { useState } from "react";
 import { champeonImgUrl, itemImgUrl, summonerSpellImgUrl } from "../utils/ddragon";
 import { getPartidaDetalle } from "../services/api";
 import Tooltip from "./Tooltip";
-import { obtenerDatosItem, obtenerDatosHechizo } from "../utils/gameData";
+import { obtenerDatosItem, obtenerDatosHechizo, obtenerImagenLinea, LANE_ORDER } from "../utils/gameData";
 
 function formatearDuracion(segundos) {
   const min = Math.floor(segundos / 60);
@@ -31,6 +31,8 @@ function formatearModoJuego(modoJuego) {
 }
 
 function FilaJugador({ jugador, esRival }) {
+  const imagenLinea = obtenerImagenLinea(jugador.role);
+
   return (
     <div className="flex items-center gap-2 text-xs py-1">
       <Tooltip title={jugador.campeon} description="Campeón de partida" position="right">
@@ -40,7 +42,14 @@ function FilaJugador({ jugador, esRival }) {
           className="w-6 h-6 rounded-full border border-black cursor-help hover:brightness-110 transition"
         />
       </Tooltip>
-      <span className="text-slate-400 w-16 truncate font-stat">{jugador.role || "-"}</span>
+      {imagenLinea && (
+        <img
+          src={imagenLinea}
+          alt={jugador.role}
+          title={jugador.role}
+          className="w-5 h-5 opacity-80 hover:opacity-100 transition"
+        />
+      )}
       <span className={`flex-1 truncate font-stat ${esRival ? "text-red-300" : "text-remi-gold"}`}>{jugador.riot_id}</span>
       <span className="text-slate-200 w-16 text-right font-stat">{jugador.kills}/{jugador.deaths}/{jugador.assists}</span>
       <span className="text-slate-400 w-10 text-right font-stat">{jugador.cs_total} cs</span>
@@ -51,13 +60,25 @@ function FilaJugador({ jugador, esRival }) {
 function DetallePartida({ detalle }) {
   if (!detalle) return <p className="text-slate-300 text-sm p-4">Cargando detalle...</p>;
 
+  // Función para ordenar jugadores por rol
+  const ordenarPorRol = (jugadores) => {
+    return [...jugadores].sort((a, b) => {
+      const indexA = LANE_ORDER.indexOf(a.role || "UTILITY");
+      const indexB = LANE_ORDER.indexOf(b.role || "UTILITY");
+      return indexA - indexB;
+    });
+  };
+
+  const equipo100Ordenado = ordenarPorRol(detalle.equipo_100.jugadores);
+  const equipo200Ordenado = ordenarPorRol(detalle.equipo_200.jugadores);
+
   return (
     <div className="bg-remi-navy border-3 border-black mt-2 grid grid-cols-1 md:grid-cols-2 gap-4 p-4">
       <div>
         <p className="text-remi-gold font-display text-xs mb-2">
           EQUIPO AZUL — {detalle.equipo_100.score.kills}/{detalle.equipo_100.score.deaths}/{detalle.equipo_100.score.assists}
         </p>
-        {detalle.equipo_100.jugadores.map((j, i) => (
+        {equipo100Ordenado.map((j, i) => (
           <FilaJugador key={i} jugador={j} esRival={false} />
         ))}
       </div>
@@ -65,7 +86,7 @@ function DetallePartida({ detalle }) {
         <p className="text-red-400 font-display text-xs mb-2">
           EQUIPO ROJO — {detalle.equipo_200.score.kills}/{detalle.equipo_200.score.deaths}/{detalle.equipo_200.score.assists}
         </p>
-        {detalle.equipo_200.jugadores.map((j, i) => (
+        {equipo200Ordenado.map((j, i) => (
           <FilaJugador key={i} jugador={j} esRival={true} />
         ))}
       </div>
