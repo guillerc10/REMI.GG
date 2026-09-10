@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { champeonImgUrl, itemImgUrl, summonerSpellImgUrl } from "../utils/ddragon";
 import { getPartidaDetalle } from "../services/api";
+import Tooltip from "./Tooltip";
+import { obtenerDatosItem, obtenerDatosHechizo } from "../utils/gameData";
 
 function formatearDuracion(segundos) {
   const min = Math.floor(segundos / 60);
@@ -31,7 +33,13 @@ function formatearModoJuego(modoJuego) {
 function FilaJugador({ jugador, esRival }) {
   return (
     <div className="flex items-center gap-2 text-xs py-1">
-      <img src={champeonImgUrl(jugador.campeon)} alt={jugador.campeon} className="w-6 h-6 rounded-full border border-black" />
+      <Tooltip title={jugador.campeon} description="Campeón de partida" position="right">
+        <img
+          src={champeonImgUrl(jugador.campeon)}
+          alt={jugador.campeon}
+          className="w-6 h-6 rounded-full border border-black cursor-help hover:brightness-110 transition"
+        />
+      </Tooltip>
       <span className="text-slate-400 w-16 truncate font-stat">{jugador.role || "-"}</span>
       <span className={`flex-1 truncate font-stat ${esRival ? "text-red-300" : "text-remi-gold"}`}>{jugador.riot_id}</span>
       <span className="text-slate-200 w-16 text-right font-stat">{jugador.kills}/{jugador.deaths}/{jugador.assists}</span>
@@ -92,16 +100,30 @@ function PartidaCard({ partida, expandida, onClick, detalle }) {
         </div>
 
         <div className="flex items-center gap-1">
-          <img
-            src={champeonImgUrl(partida.campeon)}
-            alt={partida.campeon}
-            className="w-12 h-12 rounded-full border-2 border-black"
-          />
+          <Tooltip title={partida.campeon} description="Campeón seleccionado" position="bottom">
+            <img
+              src={champeonImgUrl(partida.campeon)}
+              alt={partida.campeon}
+              className="w-12 h-12 rounded-full border-2 border-black cursor-help hover:brightness-110 transition"
+            />
+          </Tooltip>
           <div className="flex flex-col gap-1">
             {[partida.summoner1_id, partida.summoner2_id].map((s, i) => {
               const url = summonerSpellImgUrl(s);
+              const datos = obtenerDatosHechizo(s);
               return url ? (
-                <img key={i} src={url} alt="hechizo" className="w-5 h-5 border border-black" />
+                <Tooltip
+                  key={i}
+                  title={datos?.nombre}
+                  description={datos?.descripcion}
+                  position="right"
+                >
+                  <img
+                    src={url}
+                    alt="hechizo"
+                    className="w-5 h-5 border border-black cursor-help hover:brightness-110 transition"
+                  />
+                </Tooltip>
               ) : (
                 <div key={i} className="w-5 h-5 bg-black/20 border border-black" />
               );
@@ -119,8 +141,20 @@ function PartidaCard({ partida, expandida, onClick, detalle }) {
         <div className="grid grid-cols-4 gap-0.5 w-fit">
           {partida.items.map((itemId, i) => {
             const url = itemImgUrl(itemId);
-            return url ? (
-              <img key={i} src={url} alt="item" className="w-8 h-8 border border-black" />
+            const datos = obtenerDatosItem(itemId);
+            return url && datos ? (
+              <Tooltip
+                key={i}
+                title={datos.nombre}
+                description={datos.descripcion}
+                position="top"
+              >
+                <img
+                  src={url}
+                  alt="item"
+                  className="w-8 h-8 border border-black cursor-help hover:brightness-110 transition"
+                />
+              </Tooltip>
             ) : (
               <div key={i} className="w-8 h-8 bg-black/20 border border-black" />
             );
