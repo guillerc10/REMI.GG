@@ -26,11 +26,13 @@ class Liga(models.Model):
         return f"{self.invocador.riot_id} - {self.tier} {self.rank}"
 
 
+
 class Partida(models.Model):
     match_id = models.CharField(max_length=50, unique=True)
     fecha = models.DateTimeField()
     duracion_segundos = models.IntegerField()
-    modo_juego = models.CharField(max_length=30)  # ej: CLASSIC, ARAM
+    modo_juego = models.CharField(max_length=30)
+    queue_id = models.IntegerField(default=0)
 
     def __str__(self):
         return self.match_id
@@ -54,6 +56,7 @@ class Participante(models.Model):
     win = models.BooleanField(default=False)
     team_id = models.IntegerField()  # 100 o 200
     role = models.CharField(max_length=20, default="")  # TOP, JUNGLE, MIDDLE, BOTTOM, UTILITY
+    queue_id = models.IntegerField(default=0)
 
     # Nuevo: items (7 slots, incluyendo trinket)
     item0 = models.IntegerField(default=0)

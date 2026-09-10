@@ -147,3 +147,19 @@ def partida_detalle(request, match_id):
     if detalle is None:
         return Response({"error": "Partida no encontrada"}, status=status.HTTP_404_NOT_FOUND)
     return Response(detalle)
+
+@api_view(["POST"])
+def actualizar_invocador(request, game_name, tag_line):
+    try:
+        invocador = sincronizar_historial(game_name, tag_line, count=10)
+        return Response({"mensaje": f"Actualizado {invocador.riot_id}"})
+    except requests.exceptions.HTTPError as e:
+        if e.response.status_code == 404:
+            return Response(
+                {"error": f"No se encontró el invocador {game_name}#{tag_line}"},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+        return Response(
+            {"error": f"Error al consultar Riot API (status {e.response.status_code})"},
+            status=status.HTTP_502_BAD_GATEWAY,
+        )

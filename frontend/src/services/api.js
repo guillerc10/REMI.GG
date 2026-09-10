@@ -24,6 +24,14 @@ export const getCampeones = (gameName, tagLine) =>
 export const getCompaneros = (gameName, tagLine) =>
   api.get(`/invocador/${gameName}/${tagLine}/companeros/`);
 
+export const getHistorial = (gameName, tagLine) =>
+  api.get(`/invocador/${gameName}/${tagLine}/historial/`);
+
+export const actualizarInvocador = (gameName, tagLine) =>
+  api.post(`/invocador/${gameName}/${tagLine}/actualizar/`);
+
+export const getPartidaDetalle = (matchId) =>
+  api.get(`/partida/${matchId}/`);
 
 export const compararInvocadores = (gameName1, tagLine1, gameName2, tagLine2) =>
   api.get(`/comparar/`, {
@@ -35,7 +43,4 @@ export const compararInvocadores = (gameName1, tagLine1, gameName2, tagLine2) =>
     },
   });
 
-export default api; 
-
-export const getHistorial = (gameName, tagLine) =>
-  api.get(`/invocador/${gameName}/${tagLine}/historial/`);
+export default api;

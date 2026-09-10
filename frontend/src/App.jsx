@@ -2,7 +2,11 @@ import { useState } from "react";
 import Buscador from "./components/Buscador";
 import Comparador from "./components/Comparador";
 import HistorialPartidas from "./components/HistorialPartidas";
-import { getPerfil, getLigas, getWinrate, getKda, getCampeones, getCompaneros, getHistorial } from "./services/api";
+import {
+  getPerfil, getLigas, getWinrate, getKda, getCampeones,
+  getCompaneros, getHistorial, actualizarInvocador,
+} from "./services/api";
+import { tierIconUrl } from "./utils/ddragon";
 
 function App() {
   const [perfil, setPerfil] = useState(null);
@@ -13,33 +17,44 @@ function App() {
   const [companeros, setCompaneros] = useState([]);
   const [historial, setHistorial] = useState([]);
   const [cargando, setCargando] = useState(false);
+  const [actualizando, setActualizando] = useState(false);
   const [error, setError] = useState(null);
+  const [ultimaBusqueda, setUltimaBusqueda] = useState(null);
+  const [tabActiva, setTabActiva] = useState("historial");
+  const [verTodosCompaneros, setVerTodosCompaneros] = useState(false);
+
+  const cargarDatos = async (gameName, tagLine) => {
+    const perfilRes = await getPerfil(gameName, tagLine);
+    setPerfil(perfilRes.data);
+
+    const [ligasRes, winrateRes, kdaRes, campeonesRes, companerosRes, historialRes] =
+      await Promise.all([
+        getLigas(gameName, tagLine),
+        getWinrate(gameName, tagLine),
+        getKda(gameName, tagLine),
+        getCampeones(gameName, tagLine),
+        getCompaneros(gameName, tagLine),
+        getHistorial(gameName, tagLine),
+      ]);
+
+    setLigas(ligasRes.data);
+    setWinrate(winrateRes.data);
+    setKda(kdaRes.data);
+    setCampeones(campeonesRes.data);
+    setCompaneros(companerosRes.data);
+    setHistorial(historialRes.data);
+  };
 
   const handleBuscar = async (gameName, tagLine) => {
     setCargando(true);
     setError(null);
     setPerfil(null);
+    setVerTodosCompaneros(false);
+    setTabActiva("historial");
+    setUltimaBusqueda({ gameName, tagLine });
 
     try {
-      const perfilRes = await getPerfil(gameName, tagLine);
-      setPerfil(perfilRes.data);
-
-      const [ligasRes, winrateRes, kdaRes, campeonesRes, companerosRes, historialRes] =
-        await Promise.all([
-          getLigas(gameName, tagLine),
-          getWinrate(gameName, tagLine),
-          getKda(gameName, tagLine),
-          getCampeones(gameName, tagLine),
-          getCompaneros(gameName, tagLine),
-          getHistorial(gameName, tagLine),
-        ]);
-
-      setLigas(ligasRes.data);
-      setWinrate(winrateRes.data);
-      setKda(kdaRes.data);
-      setCampeones(campeonesRes.data);
-      setCompaneros(companerosRes.data);
-      setHistorial(historialRes.data);
+      await cargarDatos(gameName, tagLine);
     } catch (err) {
       setError("No se encontró ese invocador");
     } finally {
@@ -47,97 +62,201 @@ function App() {
     }
   };
 
+  const handleActualizar = async () => {
+    if (!ultimaBusqueda) return;
+    setActualizando(true);
+    setError(null);
+
+    try {
+      await actualizarInvocador(ultimaBusqueda.gameName, ultimaBusqueda.tagLine);
+      await cargarDatos(ultimaBusqueda.gameName, ultimaBusqueda.tagLine);
+    } catch (err) {
+      setError("No se pudo actualizar el invocador");
+    } finally {
+      setActualizando(false);
+    }
+  };
+
+  const companerosVisibles = verTodosCompaneros ? companeros : companeros.slice(0, 5);
+
   return (
-    <div className="min-h-screen bg-slate-900 flex flex-col items-center pt-12 gap-6 pb-20 px-4">
-      <h1 className="text-4xl font-bold text-white">REMI.GG 🎮</h1>
+    <div className="min-h-screen flex flex-col items-center pt-12 gap-6 pb-20 px-4">
+      <h1 className="text-5xl font-display tracking-tight brutal-title">REMI.GG 🎮</h1>
       <Buscador onBuscar={handleBuscar} />
 
-      {cargando && <p className="text-slate-400">Buscando (puede tardar unos segundos)...</p>}
-      {error && <p className="text-red-400">{error}</p>}
+      {cargando && <p className="text-remi-light">Buscando (puede tardar unos segundos)...</p>}
+      {error && (
+        <p className="brutal-btn bg-red-600 text-white font-semibold px-4 py-2">{error}</p>
+      )}
 
       {perfil && (
-        <div className="w-full max-w-6xl grid grid-cols-1 lg:grid-cols-[320px_1fr] gap-4 items-start">
-          {/* Columna izquierda: perfil, ligas, winrate, KDA */}
-          <div className="flex flex-col gap-4">
-            <div className="bg-slate-800 rounded-xl p-6 text-white">
-              <h2 className="text-2xl font-bold">{perfil.riot_id}</h2>
-              <p className="text-slate-400">Nivel {perfil.summoner_level}</p>
+        <div className="w-full max-w-6xl grid grid-cols-1 lg:grid-cols-[320px_1fr] gap-6 items-start">
+          {/* Columna izquierda */}
+          <div className="flex flex-col gap-6">
+            <div className="brutal-card p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h2 className="text-2xl font-display">{perfil.riot_id}</h2>
+                  <p className="text-slate-700 font-stat">Nivel {perfil.summoner_level}</p>
+                </div>
+                <button
+                  onClick={handleActualizar}
+                  disabled={actualizando}
+                  className="brutal-btn text-xs px-3 py-2 bg-remi-teal disabled:bg-slate-400 text-white font-display"
+                >
+                  {actualizando ? "..." : "Actualizar"}
+                </button>
+              </div>
             </div>
 
             {ligas.length > 0 && (
-              <div className="bg-slate-800 rounded-xl p-6 text-white">
-                <h3 className="text-lg font-semibold mb-2">Ligas</h3>
-                {ligas.map((l, i) => (
-                  <p key={i} className="text-slate-300 text-sm mb-1">
-                    <span className="block font-medium text-slate-200">{l.queue_type}</span>
-                    {l.tier} {l.rank} — {l.league_points} LP ({l.wins}V / {l.losses}D)
-                  </p>
-                ))}
-              </div>
-            )}
-
-            {winrate && (
-              <div className="bg-slate-800 rounded-xl p-6 text-white">
-                <h3 className="text-lg font-semibold mb-1">Winrate</h3>
-                <p className="text-3xl font-bold text-blue-400">{winrate.winrate}%</p>
-                <p className="text-slate-400 text-sm">
-                  {winrate.victorias}V / {winrate.derrotas}D ({winrate.total} partidas)
-                </p>
-              </div>
-            )}
-
-            {kda && (
-              <div className="bg-slate-800 rounded-xl p-6 text-white">
-                <h3 className="text-lg font-semibold mb-1">KDA promedio</h3>
-                <p className="text-2xl font-bold text-yellow-400">
-                  {kda.kills_prom} / {kda.deaths_prom} / {kda.assists_prom}
-                </p>
-                <p className="text-slate-400 text-sm">Ratio: {kda.kda_ratio}</p>
-              </div>
-            )}
-
-            {companeros.length > 0 && (
-              <div className="bg-slate-800 rounded-xl p-6 text-white">
-                <h3 className="text-lg font-semibold mb-2">Compañeros frecuentes</h3>
-                <div className="flex flex-col gap-1 max-h-64 overflow-y-auto pr-1">
-                  {companeros.map((c, i) => (
-                    <p key={i} className="text-slate-300 text-sm">
-                      {c.riot_id}: {c.partidas}p, {c.winrate}%
-                    </p>
-                  ))}
-                </div>
-              </div>
-            )}
-          </div>
-
-          {/* Columna derecha: campeones + historial */}
-          <div className="flex flex-col gap-4">
-            {campeones.length > 0 && (
-              <div className="bg-slate-800 rounded-xl p-6 text-white">
-                <h3 className="text-lg font-semibold mb-2">Stats por campeón</h3>
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                  {campeones.map((c, i) => (
-                    <div key={i} className="bg-slate-900 rounded-lg p-3">
-                      <p className="text-slate-200 font-medium text-sm">{c.campeon}</p>
-                      <p className="text-slate-400 text-xs">{c.partidas} partidas</p>
-                      <p className={`text-sm font-semibold ${c.winrate >= 50 ? "text-blue-400" : "text-red-400"}`}>
-                        {c.winrate}% WR
-                      </p>
+              <div className="brutal-card p-6">
+                <h3 className="text-sm font-display uppercase tracking-wide mb-3">Ligas</h3>
+                <div className="flex flex-col gap-4">
+                  {ligas.map((l, i) => (
+                    <div key={i} className="flex items-center gap-3">
+                      <img
+                        src={tierIconUrl(l.tier)}
+                        alt={l.tier}
+                        className="w-16 h-16 flex-shrink-0"
+                        onError={(e) => { e.target.style.display = "none"; }}
+                      />
+                      <div>
+                        <p className="text-xs text-slate-600 uppercase tracking-wide">{l.queue_type}</p>
+                        <p className="font-display text-sm">{l.tier} {l.rank}</p>
+                        <p className="text-sm font-stat text-slate-700">{l.league_points} LP</p>
+                        <p className="text-xs text-slate-600">{l.wins}V / {l.losses}D</p>
+                      </div>
                     </div>
                   ))}
                 </div>
               </div>
             )}
 
-            <HistorialPartidas partidas={historial} />
+            {winrate && kda && (
+              <div className="brutal-card p-6">
+                <div className="flex items-center justify-between mb-2">
+                  <h3 className="text-xs font-display uppercase tracking-wide">Rendimiento</h3>
+                  <span className="text-xs text-slate-600 font-stat">{winrate.total} partidas</span>
+                </div>
+
+                <div className="flex items-center gap-3 mb-3">
+                  <div className="relative w-16 h-16 flex-shrink-0">
+                    <svg className="w-16 h-16 -rotate-90">
+                      <circle cx="32" cy="32" r="28" stroke="#00000022" strokeWidth="6" fill="none" />
+                      <circle
+                        cx="32" cy="32" r="28"
+                        stroke={winrate.winrate >= 50 ? "#016A70" : "#dc2626"}
+                        strokeWidth="6" fill="none"
+                        strokeDasharray={2 * Math.PI * 28}
+                        strokeDashoffset={2 * Math.PI * 28 * (1 - winrate.winrate / 100)}
+                        strokeLinecap="round"
+                      />
+                    </svg>
+                    <span className="absolute inset-0 flex items-center justify-center text-sm font-display">
+                      {winrate.winrate}%
+                    </span>
+                  </div>
+                  <div>
+                    <p className="text-slate-700 text-sm font-stat">{winrate.victorias}V / {winrate.derrotas}D</p>
+                    <p className="text-xs text-slate-600">Winrate</p>
+                  </div>
+                </div>
+
+                <div className="border-t-2 border-black pt-3">
+                  <p className="text-xl font-stat font-bold text-remi-navy">
+                    {kda.kills_prom} / {kda.deaths_prom} / {kda.assists_prom}
+                  </p>
+                  <p className="text-xs text-slate-600">KDA promedio — Ratio {kda.kda_ratio}</p>
+                </div>
+              </div>
+            )}
+
+            {companeros.length > 0 && (
+              <div className="brutal-card p-6">
+                <h3 className="text-xs font-display uppercase tracking-wide mb-2">Compañeros frecuentes</h3>
+                <div className="flex flex-col gap-1.5">
+                  {companerosVisibles.map((c, i) => (
+                    <div key={i} className="flex items-center justify-between text-sm">
+                      <span className="text-slate-700 truncate">{c.riot_id}</span>
+                      <span className={`text-xs font-stat font-bold flex-shrink-0 ml-2 ${c.winrate >= 50 ? "text-remi-teal" : "text-red-600"}`}>
+                        {c.partidas}p · {c.winrate}%
+                      </span>
+                    </div>
+                  ))}
+                </div>
+                {companeros.length > 5 && (
+                  <button
+                    onClick={() => setVerTodosCompaneros(!verTodosCompaneros)}
+                    className="text-xs font-display text-remi-navy underline mt-2"
+                  >
+                    {verTodosCompaneros ? "Ver menos" : `Ver ${companeros.length - 5} más`}
+                  </button>
+                )}
+              </div>
+            )}
+          </div>
+
+          {/* Columna derecha: pestañas */}
+          <div className="flex flex-col gap-6">
+            <div className="brutal-card overflow-hidden p-0">
+              <div className="flex border-b-3 border-black">
+                <button
+                  onClick={() => setTabActiva("historial")}
+                  className={`flex-1 py-3 text-sm font-display uppercase transition ${
+                    tabActiva === "historial"
+                      ? "bg-remi-navy text-remi-gold"
+                      : "text-slate-600 hover:bg-black/5"
+                  }`}
+                >
+                  Historial
+                </button>
+                <button
+                  onClick={() => setTabActiva("campeones")}
+                  className={`flex-1 py-3 text-sm font-display uppercase transition border-l-3 border-black ${
+                    tabActiva === "campeones"
+                      ? "bg-remi-navy text-remi-gold"
+                      : "text-slate-600 hover:bg-black/5"
+                  }`}
+                >
+                  Campeones
+                </button>
+              </div>
+
+              <div className="p-4">
+                {tabActiva === "campeones" && campeones.length > 0 && (
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                    {campeones.map((c, i) => (
+                      <div key={i} className="brutal-block bg-white p-3">
+                        <p className="font-display text-xs">{c.campeon}</p>
+                        <p className="text-slate-600 text-xs font-stat">{c.partidas} partidas</p>
+                        <p className={`text-sm font-stat font-bold ${c.winrate >= 50 ? "text-remi-teal" : "text-red-600"}`}>
+                          {c.winrate}% WR
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {tabActiva === "historial" && (
+                  <div className="flex flex-col gap-3">
+                    <HistorialPartidasContenido partidas={historial} />
+                  </div>
+                )}
+              </div>
+            </div>
           </div>
         </div>
       )}
 
-      <div className="w-full h-px bg-slate-700 my-8 max-w-6xl" />
+      <div className="w-full h-1 bg-black my-8 max-w-6xl" />
       <Comparador />
     </div>
   );
+}
+
+function HistorialPartidasContenido({ partidas }) {
+  return <HistorialPartidas partidas={partidas} sinTarjeta />;
 }
 
 export default App;
