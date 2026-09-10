@@ -108,6 +108,43 @@ def historial_invocador(request, game_name, tag_line):
     return Response(historial_partidas(invocador))
 
 @api_view(["GET"])
+def maestrias_invocador(request, game_name, tag_line):
+    """
+    Obtiene las maestrías de campeones del invocador.
+    """
+    try:
+        invocador = Invocador.objects.get(riot_id=f"{game_name}#{tag_line}")
+        from .services import obtener_maestrias
+        maestrias = obtener_maestrias(invocador.id)  # Usar summoner ID
+
+        # Procesar y devolver top 3 maestrías con nombre del campeón
+        top_maestrias = []
+        for i, maestria in enumerate(maestrias[:3]):
+            try:
+                campeon = Campeon.objects.get(champion_id=maestria['championId'])
+                top_maestrias.append({
+                    "campeon": campeon.nombre,
+                    "championId": maestria['championId'],
+                    "nivel": maestria['championLevel'],
+                    "puntos": maestria['championPoints'],
+                })
+            except Campeon.DoesNotExist:
+                pass
+
+        return Response(top_maestrias)
+    except Invocador.DoesNotExist:
+        return Response(
+            {"error": f"No se encontró el invocador"},
+            status=status.HTTP_404_NOT_FOUND,
+        )
+    except Exception as e:
+        return Response(
+            {"error": str(e)},
+            status=status.HTTP_502_BAD_GATEWAY,
+        )
+
+
+@api_view(["GET"])
 def partida_detalle(request, match_id):
     detalle = detalle_partida(match_id)
     if detalle is None:

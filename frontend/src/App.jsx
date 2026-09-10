@@ -1,9 +1,10 @@
 import { useState } from "react";
 import Buscador from "./components/Buscador";
 import HistorialPartidas from "./components/HistorialPartidas";
+import CampeonesTop from "./components/CampeonesTop";
 import {
   getPerfil, getLigas, getWinrate, getKda, getCampeones,
-  getCompaneros, getHistorial, actualizarInvocador,
+  getCompaneros, getHistorial, actualizarInvocador, getMaestrias,
 } from "./services/api";
 import { tierIconUrl, profileIconUrl } from "./utils/ddragon";
 import NeoBrutalBackground from "./components/NeoBrutalBackground";
@@ -17,6 +18,7 @@ function App() {
   const [campeones, setCampeones] = useState([]);
   const [companeros, setCompaneros] = useState([]);
   const [historial, setHistorial] = useState([]);
+  const [maestrias, setMaestrias] = useState([]);
   const [cargando, setCargando] = useState(false);
   const [actualizando, setActualizando] = useState(false);
   const [error, setError] = useState(null);
@@ -28,7 +30,7 @@ function App() {
     const perfilRes = await getPerfil(gameName, tagLine);
     setPerfil(perfilRes.data);
 
-    const [ligasRes, winrateRes, kdaRes, campeonesRes, companerosRes, historialRes] =
+    const [ligasRes, winrateRes, kdaRes, campeonesRes, companerosRes, historialRes, maestriasRes] =
       await Promise.all([
         getLigas(gameName, tagLine),
         getWinrate(gameName, tagLine),
@@ -36,6 +38,7 @@ function App() {
         getCampeones(gameName, tagLine),
         getCompaneros(gameName, tagLine),
         getHistorial(gameName, tagLine),
+        getMaestrias(gameName, tagLine).catch(() => ({ data: [] })), // Si falla, devolver vacío
       ]);
 
     setLigas(ligasRes.data);
@@ -44,6 +47,7 @@ function App() {
     setCampeones(campeonesRes.data);
     setCompaneros(companerosRes.data);
     setHistorial(historialRes.data);
+    setMaestrias(maestriasRes.data);
   };
 
   const handleBuscar = async (gameName, tagLine) => {
@@ -100,8 +104,8 @@ function App() {
       )}
 
       {perfil && (
-        <div className="w-full max-w-6xl grid grid-cols-1 lg:grid-cols-[320px_1fr] gap-6 items-start">
-          {/* Columna izquierda */}
+        <div className="w-full max-w-6xl grid grid-cols-1 lg:grid-cols-[320px_320px_1fr] gap-6 items-start">
+          {/* Columna izquierda - Perfil e Info */}
           <div className="flex flex-col gap-6">
             <div className="brutal-card-static p-6">
               <div className="flex items-center justify-between gap-4">
@@ -204,6 +208,13 @@ function App() {
                   </button>
                 )}
               </div>
+            )}
+          </div>
+
+          {/* Columna central - Campeones Top */}
+          <div className="flex flex-col gap-6">
+            {campeones.length > 0 && (
+              <CampeonesTop maestrias={maestrias} campeones={campeones} />
             )}
           </div>
 

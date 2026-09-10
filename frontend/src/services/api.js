@@ -27,6 +27,9 @@ export const getCompaneros = (gameName, tagLine) =>
 export const getHistorial = (gameName, tagLine) =>
   api.get(`/invocador/${gameName}/${tagLine}/historial/`);
 
+export const getMaestrias = (gameName, tagLine) =>
+  api.get(`/invocador/${gameName}/${tagLine}/maestrias/`);
+
 export const actualizarInvocador = (gameName, tagLine) =>
   api.post(`/invocador/${gameName}/${tagLine}/actualizar/`);
 

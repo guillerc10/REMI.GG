@@ -32,6 +32,17 @@ def obtener_ligas(puuid):
     return response.json()  # lista de ligas (solo/duo, flex, etc.)
 
 
+def obtener_maestrias(summoner_id):
+    """
+    Obtiene las maestrías de campeones del invocador.
+    Devuelve lista de campeones con su nivel de maestría.
+    """
+    url = f"{HOST_PLATAFORMA}/lol/champion-mastery/v4/champion-masteries/by-summoner/{summoner_id}"
+    response = requests.get(url, headers=HEADERS)
+    response.raise_for_status()
+    return response.json()  # lista de maestrías
+
+
 def sincronizar_invocador(game_name, tag_line):
     """
     Trae los datos base del invocador desde Riot API y los guarda/actualiza en Postgres.
