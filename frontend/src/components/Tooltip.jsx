@@ -59,7 +59,7 @@ function Tooltip({ children, title, description, position = "auto" }) {
       {mostrar && (
         <div
           ref={tooltipRef}
-          className={`absolute ${posiciones[posicionFinal]} z-50 bg-remi-navy border-2 border-black rounded-sm shadow-lg pointer-events-none w-80`}
+          className={`absolute ${posiciones[posicionFinal]} z-[9999] bg-remi-navy border-2 border-black rounded-sm shadow-2xl pointer-events-none w-80`}
         >
           <div className="p-3">
             {title && <p className="font-display text-xs text-remi-gold mb-2 break-words">{title}</p>}
@@ -73,11 +73,11 @@ function Tooltip({ children, title, description, position = "auto" }) {
           <div
             className="absolute w-2 h-2 bg-remi-navy border-2 border-black transform -rotate-45"
             style={{
-              [position === "top" ? "bottom" : position === "bottom" ? "top" : position === "left" ? "right" : "left"]: "-5px",
-              [position === "top" || position === "bottom" ? "left" : "top"]: "50%",
-              transform: position === "top" ? "translateX(-50%) translateY(50%) rotate(45deg)" :
-                         position === "bottom" ? "translateX(-50%) translateY(-50%) rotate(45deg)" :
-                         position === "left" ? "translateY(-50%) translateX(50%) rotate(45deg)" :
+              [posicionFinal === "top" ? "bottom" : posicionFinal === "bottom" ? "top" : posicionFinal === "left" ? "right" : "left"]: "-5px",
+              [posicionFinal === "top" || posicionFinal === "bottom" ? "left" : "top"]: "50%",
+              transform: posicionFinal === "top" ? "translateX(-50%) translateY(50%) rotate(45deg)" :
+                         posicionFinal === "bottom" ? "translateX(-50%) translateY(-50%) rotate(45deg)" :
+                         posicionFinal === "left" ? "translateY(-50%) translateX(50%) rotate(45deg)" :
                          "translateY(-50%) translateX(-50%) rotate(45deg)"
             }}
           />
