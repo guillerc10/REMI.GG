@@ -7,44 +7,161 @@
   --color-remi-gold: #E5D283;
   --color-remi-teal: #016A70;
   --color-remi-light: #F0F0F0;
+  --color-synth-bg: #050505;
+  --color-neo-pink: #FF66A1;
+  --color-neo-purple: #8B5CF6;
+  --color-neo-green: #10B981;
 }
 
 body {
   font-family: "Inter", sans-serif;
-  background-color: var(--color-remi-navy);
-  background-image:
-    linear-gradient(rgba(255,255,255,0.05) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255,255,255,0.05) 1px, transparent 1px);
-  background-size: 28px 28px;
+  background-color: var(--color-synth-bg);
+  overflow-x: hidden;
+  color: white;
 }
 
+/* Typography */
 .font-display { font-family: "Archivo Black", sans-serif; }
 .font-stat { font-family: "Space Grotesk", sans-serif; font-variant-numeric: tabular-nums; }
 
+/* Neo-Brutalism Utilities */
 .brutal-title {
   font-family: "Archivo Black", sans-serif;
   color: var(--color-remi-gold);
   text-shadow: 4px 4px 0 #000;
+  -webkit-text-stroke: 1.5px #000;
 }
 
 .brutal-card {
   background-color: var(--color-remi-light);
   color: var(--color-remi-navy);
-  border: 3px solid #000;
-  box-shadow: 7px 7px 0 0 #000;
+  border: 4px solid #000;
+  box-shadow: 8px 8px 0 0 #000;
+  border-radius: 8px;
+  position: relative;
+  z-index: 10;
 }
 
 .brutal-block {
   border: 3px solid #000;
-  box-shadow: 5px 5px 0 0 #000;
+  box-shadow: 6px 6px 0 0 #000;
+  border-radius: 6px;
 }
 
 .brutal-btn {
   border: 3px solid #000;
-  box-shadow: 4px 4px 0 0 #000;
+  box-shadow: 6px 6px 0 0 #000;
+  border-radius: 8px;
   transition: transform 0.08s ease, box-shadow 0.08s ease;
 }
 .brutal-btn:active {
-  transform: translate(4px, 4px);
+  transform: translate(6px, 6px);
   box-shadow: 0 0 0 0 #000;
+}
+
+/* Stickers / Floating Cards */
+.neo-sticker {
+  position: absolute;
+  border: 4px solid #000;
+  box-shadow: 8px 8px 0 0 #000;
+  background: white;
+  border-radius: 12px;
+  overflow: hidden;
+  transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  z-index: 5;
+}
+.neo-sticker:hover {
+  transform: scale(1.1) rotate(0deg) !important;
+  z-index: 50;
+}
+
+/* Synthwave Grid 3D Animation */
+.synthwave-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: #050505;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.synthwave-grid {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 50%;
+  background-image: 
+    linear-gradient(rgba(255, 255, 255, 0.3) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.3) 1px, transparent 1px);
+  background-size: 60px 60px;
+  background-position: 0 0;
+  transform: perspective(600px) rotateX(60deg) scale(2);
+  transform-origin: bottom center;
+  animation: gridMove 6s linear infinite;
+}
+
+.synthwave-grid-top {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 50%;
+  background-image: 
+    linear-gradient(rgba(255, 255, 255, 0.15) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.15) 1px, transparent 1px);
+  background-size: 60px 60px;
+  background-position: 0 0;
+  transform: perspective(600px) rotateX(-60deg) scale(2);
+  transform-origin: top center;
+  animation: gridMoveTop 6s linear infinite;
+}
+
+@keyframes gridMove {
+  0% { background-position: 0 0; }
+  100% { background-position: 0 60px; }
+}
+@keyframes gridMoveTop {
+  0% { background-position: 0 0; }
+  100% { background-position: 0 -60px; }
+}
+
+/* Ticker Animation */
+.ticker-wrap {
+  width: 100%;
+  overflow: hidden;
+  background-color: var(--color-neo-purple);
+  border-top: 4px solid #000;
+  border-bottom: 4px solid #000;
+  padding: 12px 0;
+  display: flex;
+  white-space: nowrap;
+  position: relative;
+  z-index: 20;
+}
+
+.ticker-content {
+  display: inline-flex;
+  animation: tickerSlide 20s linear infinite;
+  color: white;
+  font-family: "Archivo Black", sans-serif;
+  text-transform: uppercase;
+  font-size: 1.25rem;
+  letter-spacing: 2px;
+  text-shadow: 2px 2px 0 #000;
+  -webkit-text-stroke: 1px #000;
+}
+
+@keyframes tickerSlide {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+.ticker-item {
+  padding: 0 40px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
 }

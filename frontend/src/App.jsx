@@ -7,6 +7,8 @@ import {
   getCompaneros, getHistorial, actualizarInvocador,
 } from "./services/api";
 import { tierIconUrl } from "./utils/ddragon";
+import SynthwaveBackground from "./components/SynthwaveBackground";
+import Ticker from "./components/Ticker";
 
 function App() {
   const [perfil, setPerfil] = useState(null);
@@ -80,9 +82,12 @@ function App() {
   const companerosVisibles = verTodosCompaneros ? companeros : companeros.slice(0, 5);
 
   return (
-    <div className="min-h-screen flex flex-col items-center pt-12 gap-6 pb-20 px-4">
-      <h1 className="text-5xl font-display tracking-tight brutal-title">REMI.GG 🎮</h1>
-      <Buscador onBuscar={handleBuscar} />
+    <div className="min-h-screen flex flex-col items-center pt-12 relative overflow-hidden">
+      <SynthwaveBackground />
+
+      <div className="w-full flex flex-col items-center gap-6 px-4 z-10 relative flex-grow pb-12">
+        <h1 className="text-6xl md:text-8xl font-display tracking-tight brutal-title text-center mb-4">REMI.GG 🎮</h1>
+        <Buscador onBuscar={handleBuscar} />
 
       {cargando && <p className="text-remi-light">Buscando (puede tardar unos segundos)...</p>}
       {error && (
@@ -249,8 +254,12 @@ function App() {
         </div>
       )}
 
-      <div className="w-full h-1 bg-black my-8 max-w-6xl" />
-      <Comparador />
+      <div className="w-full h-1 bg-white my-8 max-w-6xl z-10 relative border-b-2 border-black" />
+      <div className="z-10 relative w-full flex justify-center pb-12">
+        <Comparador />
+      </div>
+      </div>
+      <Ticker />
     </div>
   );
 }
