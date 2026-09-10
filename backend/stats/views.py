@@ -112,27 +112,41 @@ def maestrias_invocador(request, game_name, tag_line):
     """
     Obtiene las maestrías de campeones del invocador.
     """
+    print(f"\n{'='*60}")
+    print(f"🔍 MAESTRIAS_INVOCADOR: {game_name}#{tag_line}")
+    print(f"{'='*60}")
+
     try:
         from .services import obtener_summoner, obtener_maestrias
 
         # Obtener PUUID y luego summoner_id desde Riot API
+        print(f"\n1️⃣ Obteniendo PUUID...")
         puuid_data = obtener_puuid(game_name, tag_line)
         puuid = puuid_data['puuid']
-        print(f"✅ PUUID obtenido: {puuid}")
+        print(f"   ✅ PUUID: {puuid}")
 
+        print(f"\n2️⃣ Obteniendo Summoner ID...")
         summoner_data = obtener_summoner(puuid)
         summoner_id = summoner_data['id']
-        print(f"✅ Summoner ID obtenido: {summoner_id}")
+        print(f"   ✅ Summoner ID: {summoner_id}")
 
         # Obtener maestrías
+        print(f"\n3️⃣ Obteniendo maestrías de Riot API...")
         maestrias = obtener_maestrias(summoner_id)
-        print(f"✅ Maestrías obtenidas: {len(maestrias)} total")
+        print(f"   ✅ Total maestrías recibidas: {len(maestrias)}")
+        if maestrias:
+            print(f"   📊 Primeras 3:")
+            for i, m in enumerate(maestrias[:3], 1):
+                print(f"      {i}. Champion ID {m.get('championId')} - Nivel {m.get('championLevel')} - {m.get('championPoints')} puntos")
 
         # Procesar y devolver top 3 maestrías con nombre del campeón
+        print(f"\n4️⃣ Buscando nombres de campeones en BD...")
         top_maestrias = []
-        for maestria in maestrias[:3]:
+        for i, maestria in enumerate(maestrias[:3], 1):
+            champ_id = maestria['championId']
             try:
-                campeon = Campeon.objects.get(champion_id=maestria['championId'])
+                campeon = Campeon.objects.get(champion_id=champ_id)
+                print(f"   ✅ Champion {champ_id} encontrado: {campeon.nombre}")
                 top_maestrias.append({
                     "campeon": campeon.nombre,
                     "championId": maestria['championId'],
@@ -140,13 +154,15 @@ def maestrias_invocador(request, game_name, tag_line):
                     "puntos": maestria['championPoints'],
                 })
             except Campeon.DoesNotExist:
-                print(f"⚠️ Campeón {maestria['championId']} no encontrado en BD")
-                pass
+                print(f"   ⚠️ Champion {champ_id} NO encontrado en BD")
 
-        print(f"✅ Retornando {len(top_maestrias)} maestrías procesadas")
+        print(f"\n5️⃣ Resultado final: {len(top_maestrias)} maestrías procesadas")
+        print(f"{'='*60}\n")
         return Response(top_maestrias)
+
     except Exception as e:
-        print(f"❌ Error en maestrias_invocador: {str(e)}")
+        print(f"\n❌ ERROR: {str(e)}")
+        print(f"{'='*60}\n")
         import traceback
         traceback.print_exc()
         # Retornar array vacío si falla (para que no bloquee la UI)
