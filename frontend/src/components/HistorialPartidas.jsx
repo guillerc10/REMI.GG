@@ -17,8 +17,9 @@ function formatearModoJuego(modoJuego) {
   // Traduce los modos de juego de Riot API a nombres más legibles
   const mapeo = {
     "CLASSIC": "Normal",
-    "RANKED_SOLO_5x5": "Ranked Solo/Dúo",
-    "RANKED_FLEX_SR": "Ranked Flex",
+    "RANKED_SOLO_5x5": "Solo/Dúo 5v5",
+    "RANKED_FLEX_SR": "Flex 5v5",
+    "RANKED_FLEX_TT": "Flex 3v3",
     "ARAM": "ARAM",
     "CHERRY": "Arena",
     "TEAM_BUILDER_DRAFT": "Draft Normal",

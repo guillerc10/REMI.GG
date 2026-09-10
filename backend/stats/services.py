@@ -165,11 +165,79 @@ def sincronizar_partida(match_id):
 def sincronizar_historial(game_name, tag_line, count=10):
     """
     Sincroniza el invocador y sus últimas `count` partidas.
+    Calcula el LP change comparando antes/después.
     """
     invocador = sincronizar_invocador(game_name, tag_line)
     match_ids = obtener_match_ids(invocador.puuid, count=count)
 
+    # Sincronizar todas las partidas
     for match_id in match_ids:
         sincronizar_partida(match_id)
 
+    # Calcular LP changes basado en histórico
+    _calcular_lp_changes(invocador)
+
     return invocador
+
+
+def _calcular_lp_changes(invocador):
+    """
+    Calcula el cambio de LP iterando las partidas de más antigua a más nueva.
+    Usa la información de victoria/derrota para estimar LP change.
+    """
+    from .models import Participante, Partida
+
+    # Obtener todas las participaciones ordenadas por fecha (más antigua primero)
+    participaciones = (
+        Participante.objects
+        .filter(invocador=invocador)
+        .select_related("partida")
+        .order_by("partida__fecha")
+    )
+
+    # Obtener LP actual del invocador en cada queue
+    ligas = Liga.objects.filter(invocador=invocador)
+    lp_por_queue = {}
+    for liga in ligas:
+        lp_por_queue[liga.queue_type] = liga.league_points
+
+    # Iterar en orden inverso (de más reciente a más antigua) para recalcular LP
+    lp_acumulado = {}  # {queue_type: lp_actual}
+
+    # Inicializar con LP actual
+    for queue_type, lp in lp_por_queue.items():
+        lp_acumulado[queue_type] = lp
+
+    # Procesar de más reciente a más antigua para calcular cambios
+    participaciones_desc = list(reversed(list(participaciones)))
+
+    for participante in participaciones_desc:
+        queue_type = _obtener_queue_type_de_modo(participante.partida.modo_juego)
+
+        if queue_type and queue_type in lp_acumulado:
+            # Estimar LP change basado en victoria/derrota
+            lp_change = 15 if participante.win else -15
+
+            # Para Ranked, usar el estimado
+            if "RANKED" in participante.partida.modo_juego:
+                participante.lp_change = lp_change
+                participante.save()
+
+                # Actualizar LP acumulado (en orden inverso, restamos para ir hacia atrás)
+                lp_acumulado[queue_type] -= lp_change
+            else:
+                # Para Normal, dejar en 0
+                participante.lp_change = 0
+                participante.save()
+
+
+def _obtener_queue_type_de_modo(modo_juego):
+    """
+    Mapea el modo_juego de Match-V5 al queue_type de LEAGUE-V4.
+    """
+    mapeo = {
+        "RANKED_SOLO_5x5": "RANKED_SOLO_5x5",
+        "RANKED_FLEX_SR": "RANKED_FLEX_SR",
+        "RANKED_FLEX_TT": "RANKED_FLEX_TT",
+    }
+    return mapeo.get(modo_juego)
