@@ -118,12 +118,15 @@ def maestrias_invocador(request, game_name, tag_line):
         # Obtener PUUID y luego summoner_id desde Riot API
         puuid_data = obtener_puuid(game_name, tag_line)
         puuid = puuid_data['puuid']
+        print(f"✅ PUUID obtenido: {puuid}")
 
         summoner_data = obtener_summoner(puuid)
-        summoner_id = summoner_data['id']  # Este es el ID que necesita Champion-Mastery-V4
+        summoner_id = summoner_data['id']
+        print(f"✅ Summoner ID obtenido: {summoner_id}")
 
         # Obtener maestrías
         maestrias = obtener_maestrias(summoner_id)
+        print(f"✅ Maestrías obtenidas: {len(maestrias)} total")
 
         # Procesar y devolver top 3 maestrías con nombre del campeón
         top_maestrias = []
@@ -137,10 +140,15 @@ def maestrias_invocador(request, game_name, tag_line):
                     "puntos": maestria['championPoints'],
                 })
             except Campeon.DoesNotExist:
+                print(f"⚠️ Campeón {maestria['championId']} no encontrado en BD")
                 pass
 
+        print(f"✅ Retornando {len(top_maestrias)} maestrías procesadas")
         return Response(top_maestrias)
     except Exception as e:
+        print(f"❌ Error en maestrias_invocador: {str(e)}")
+        import traceback
+        traceback.print_exc()
         # Retornar array vacío si falla (para que no bloquee la UI)
         return Response([], status=status.HTTP_200_OK)
 
