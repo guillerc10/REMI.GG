@@ -68,12 +68,12 @@ function Comparador() {
       {resultado && (
         <div className="grid grid-cols-2 gap-4">
           {[resultado.jugador_1, resultado.jugador_2].map((j, i) => (
-            <div key={i} className="bg-slate-800 rounded-xl p-6 text-white">
+            <div key={i} className="bg-slate-800 rounded-none border-2 border-remi-blue p-6 text-white">
               <h3 className="text-lg font-bold mb-3">{j.riot_id}</h3>
 
               <div className="mb-3">
                 <p className="text-sm text-slate-400">Winrate</p>
-                <p className="text-2xl font-bold text-blue-400">{j.winrate.winrate}%</p>
+                <p className="text-2xl font-bold text-remi-gold">{j.winrate.winrate}%</p>
                 <p className="text-xs text-slate-500">
                   {j.winrate.victorias}V / {j.winrate.derrotas}D ({j.winrate.total} partidas)
                 </p>

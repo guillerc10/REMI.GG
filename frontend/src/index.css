@@ -1,1 +1,50 @@
 @import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Archivo+Black&family=Space+Grotesk:wght@500;700;800&family=Inter:wght@400;500;600&display=swap');
+
+@theme {
+  --color-remi-navy: #213555;
+  --color-remi-blue: #4F709C;
+  --color-remi-gold: #E5D283;
+  --color-remi-teal: #016A70;
+  --color-remi-light: #F0F0F0;
+}
+
+body {
+  font-family: "Inter", sans-serif;
+  background-color: var(--color-remi-navy);
+  background-image:
+    linear-gradient(rgba(255,255,255,0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.05) 1px, transparent 1px);
+  background-size: 28px 28px;
+}
+
+.font-display { font-family: "Archivo Black", sans-serif; }
+.font-stat { font-family: "Space Grotesk", sans-serif; font-variant-numeric: tabular-nums; }
+
+.brutal-title {
+  font-family: "Archivo Black", sans-serif;
+  color: var(--color-remi-gold);
+  text-shadow: 4px 4px 0 #000;
+}
+
+.brutal-card {
+  background-color: var(--color-remi-light);
+  color: var(--color-remi-navy);
+  border: 3px solid #000;
+  box-shadow: 7px 7px 0 0 #000;
+}
+
+.brutal-block {
+  border: 3px solid #000;
+  box-shadow: 5px 5px 0 0 #000;
+}
+
+.brutal-btn {
+  border: 3px solid #000;
+  box-shadow: 4px 4px 0 0 #000;
+  transition: transform 0.08s ease, box-shadow 0.08s ease;
+}
+.brutal-btn:active {
+  transform: translate(4px, 4px);
+  box-shadow: 0 0 0 0 #000;
+}

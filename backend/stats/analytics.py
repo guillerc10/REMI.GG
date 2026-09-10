@@ -169,6 +169,7 @@ def historial_partidas(invocador, limite=10):
             "fecha": p.partida.fecha,
             "duracion_segundos": p.partida.duracion_segundos,
             "modo_juego": p.partida.modo_juego,
+            "queue_id": p.partida.queue_id,
             "campeon": p.campeon.nombre if p.campeon else None,
             "kills": p.kills,
             "deaths": p.deaths,

@@ -11,4 +11,5 @@ urlpatterns = [
     path("comparar/", views.comparar_invocadores),
     path("invocador/<str:game_name>/<str:tag_line>/historial/", views.historial_invocador),
     path("partida/<str:match_id>/", views.partida_detalle),
+    path("invocador/<str:game_name>/<str:tag_line>/actualizar/", views.actualizar_invocador),
 ]

@@ -107,8 +107,10 @@ def sincronizar_partida(match_id):
 
     partida = Partida.objects.create(
         match_id=match_id,
-        fecha=timezone.datetime.fromtimestamp(info["gameStartTimestamp"] / 1000, tz=timezone.UTC),        duracion_segundos=info["gameDuration"],
+        fecha=timezone.datetime.fromtimestamp(info["gameStartTimestamp"] / 1000, tz=timezone.UTC),
+        duracion_segundos=info["gameDuration"],
         modo_juego=info["gameMode"],
+        queue_id=info["queueId"],
     )
 
     for p in info["participants"]:

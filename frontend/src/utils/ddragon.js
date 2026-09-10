@@ -30,3 +30,9 @@ export const summonerSpellImgUrl = (spellId) => {
 
 export const profileIconUrl = (iconId) =>
   `https://ddragon.leagueoflegends.com/cdn/${DDRAGON_VERSION}/img/profileicon/${iconId}.png`;
+
+
+export const tierIconUrl = (tier) =>
+  tier
+    ? `https://raw.communitydragon.org/latest/plugins/rcp-fe-lol-static-assets/global/default/images/ranked-emblem/emblem-${tier.toLowerCase()}.png`
+    : null;
