@@ -116,6 +116,18 @@ export const ITEMS_DATA = {
 let ITEMS_CACHE = {};
 let ITEMS_LOADING = false;
 
+// Función auxiliar para limpiar HTML
+function limpiarHTML(html) {
+  if (!html) return "";
+  // Remover tags HTML
+  let texto = html.replace(/<br\s*\/?>/gi, "\n").replace(/<[^>]*>/g, "");
+  // Decodificar entidades HTML
+  texto = texto.replace(/&nbsp;/g, " ").replace(/&amp;/g, "&");
+  // Remover espacios múltiples
+  texto = texto.replace(/\n\s*\n/g, "\n").trim();
+  return texto;
+}
+
 // Función para obtener datos de items desde DDragon
 async function cargarItemsDeDDragon() {
   if (ITEMS_LOADING || Object.keys(ITEMS_CACHE).length > 0) return;
@@ -129,9 +141,22 @@ async function cargarItemsDeDDragon() {
 
     // Procesar y cachear items
     Object.entries(data.data).forEach(([id, item]) => {
+      // Obtener descripción limpia (sin HTML)
+      const descripcion = limpiarHTML(item.description) || item.plaintext || "Sin descripción";
+
+      // Obtener costo en oro
+      const costo = item.gold?.total || 0;
+
+      // Construir información completa
+      let infoCompleta = descripcion;
+      if (costo > 0) {
+        infoCompleta += `\n\n💰 Costo: ${costo} de oro`;
+      }
+
       ITEMS_CACHE[id] = {
         nombre: item.name,
-        descripcion: item.plaintext || "Sin descripción"
+        descripcion: infoCompleta,
+        costo: costo
       };
     });
   } catch (error) {

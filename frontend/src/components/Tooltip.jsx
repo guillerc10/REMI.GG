@@ -21,12 +21,12 @@ function Tooltip({ children, title, description, position = "top" }) {
 
       {mostrar && (
         <div
-          className={`absolute ${posiciones[position]} z-50 bg-remi-navy border-2 border-black rounded-sm shadow-lg pointer-events-none whitespace-nowrap w-max`}
+          className={`absolute ${posiciones[position]} z-50 bg-remi-navy border-2 border-black rounded-sm shadow-lg pointer-events-none w-80`}
         >
-          <div className="p-2">
-            {title && <p className="font-display text-xs text-remi-gold mb-1">{title}</p>}
+          <div className="p-3">
+            {title && <p className="font-display text-xs text-remi-gold mb-2 break-words">{title}</p>}
             {description && (
-              <p className="text-xs text-slate-300 font-stat max-w-xs">
+              <p className="text-xs text-slate-300 font-stat break-words leading-relaxed whitespace-normal">
                 {description}
               </p>
             )}
