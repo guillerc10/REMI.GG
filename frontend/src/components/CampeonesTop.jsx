@@ -21,13 +21,10 @@ function CampeonesTop({ maestrias, campeones }) {
   // Si no hay maestrias, mostrar mensaje o estado de carga
   if (!maestrias || maestrias.length === 0) {
     return (
-      <div className="brutal-card-static p-6 bg-white">
-        <h3 className="text-xs font-display uppercase tracking-wide mb-4">Campeones Top</h3>
-        <div className="text-xs text-slate-600 font-stat text-center py-4">
-          <p>Obteniendo datos de maestrías...</p>
-          <p className="text-slate-400 mt-2 text-xs">
-            {maestrias === undefined ? "Cargando..." : "No hay datos disponibles"}
-          </p>
+      <div className="brutal-card-static p-4 bg-white">
+        <h3 className="text-xs font-display uppercase tracking-wide mb-2">Campeones Top</h3>
+        <div className="text-xs text-slate-600 font-stat text-center py-2">
+          <p className="text-xs">{maestrias === undefined ? "Cargando..." : "No hay datos"}</p>
         </div>
       </div>
     );
