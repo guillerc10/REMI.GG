@@ -112,9 +112,47 @@ export const ITEMS_DATA = {
   6617: { nombre: "Mejora de Poder de Habilidad", descripcion: "Aumenta poder de habilidad" },
 };
 
+// Cache para items obtenidos de DDragon
+let ITEMS_CACHE = {};
+let ITEMS_LOADING = false;
+
+// Función para obtener datos de items desde DDragon
+async function cargarItemsDeDDragon() {
+  if (ITEMS_LOADING || Object.keys(ITEMS_CACHE).length > 0) return;
+
+  ITEMS_LOADING = true;
+  try {
+    const version = "16.17.1";
+    const url = `https://ddragon.leagueoflegends.com/cdn/${version}/data/es_ES/item.json`;
+    const response = await fetch(url);
+    const data = await response.json();
+
+    // Procesar y cachear items
+    Object.entries(data.data).forEach(([id, item]) => {
+      ITEMS_CACHE[id] = {
+        nombre: item.name,
+        descripcion: item.plaintext || "Sin descripción"
+      };
+    });
+  } catch (error) {
+    console.warn("No se pudieron cargar items de DDragon:", error);
+  }
+  ITEMS_LOADING = false;
+}
+
+// Cargar items al iniciar
+cargarItemsDeDDragon();
+
 // Función auxiliar para obtener datos de item
 export const obtenerDatosItem = (itemId) => {
   if (!itemId || itemId === 0) return null;
+
+  // Primero buscar en cache de DDragon
+  if (ITEMS_CACHE[itemId]) {
+    return ITEMS_CACHE[itemId];
+  }
+
+  // Luego en la base de datos local
   const datos = ITEMS_DATA[itemId];
   return datos || { nombre: `Item ${itemId}`, descripcion: "Sin información disponible" };
 };
