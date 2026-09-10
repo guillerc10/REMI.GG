@@ -110,17 +110,17 @@ body {
   height: 100vh;
   /* Líneas color cyan neón como en el video */
   background-image: 
-    linear-gradient(rgba(0, 217, 255, 0.8) 2px, transparent 2px),
-    linear-gradient(90deg, rgba(0, 217, 255, 0.8) 2px, transparent 2px);
-  background-size: 80px 80px;
+    linear-gradient(rgba(255, 255, 255, 0.8) 2px, transparent 2px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.8) 2px, transparent 2px);
+  background-size: 100px 20px;
   background-position: 0 0;
   /* Rotar desde el centro de la pantalla hacia el espectador */
   transform-origin: top center;
   transform: rotateX(75deg);
   /* Velocidad ajustada para que el loop se vea idéntico */
-  animation: gridMove 2s linear infinite;
+  animation: gridMove 0.9s linear infinite;
   /* Brillo neón en toda la cuadrícula */
-  filter: drop-shadow(0 0 5px rgba(0, 217, 255, 1));
+  filter: drop-shadow(0 0 5px rgba(255, 255, 255, 1));
 }
 
 .synthwave-grid-top {
@@ -130,23 +130,23 @@ body {
   width: 200%;
   height: 100vh;
   background-image: 
-    linear-gradient(rgba(0, 217, 255, 0.8) 2px, transparent 2px),
-    linear-gradient(90deg, rgba(0, 217, 255, 0.8) 2px, transparent 2px);
-  background-size: 80px 80px;
+    linear-gradient(rgba(255, 255, 255, 0.8) 2px, transparent 2px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.8) 2px, transparent 2px);
+  background-size: 100px 20px;
   background-position: 0 0;
   transform-origin: bottom center;
   transform: rotateX(-75deg);
-  animation: gridMoveTop 2s linear infinite;
-  filter: drop-shadow(0 0 5px rgba(0, 217, 255, 1));
+  animation: gridMoveTop 0.9s linear infinite;
+  filter: drop-shadow(0 0 5px rgba(255, 255, 255, 1));
 }
 
 @keyframes gridMove {
   0% { background-position: 0 0; }
-  100% { background-position: 0 80px; }
+  100% { background-position: 0 20px; }
 }
 @keyframes gridMoveTop {
   0% { background-position: 0 0; }
-  100% { background-position: 0 -80px; }
+  100% { background-position: 0 -20px; }
 }
 
 /* Ticker Animation */
