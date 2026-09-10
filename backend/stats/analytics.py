@@ -179,6 +179,7 @@ def historial_partidas(invocador, limite=10):
             "items": [p.item0, p.item1, p.item2, p.item3, p.item4, p.item5, p.item6],
             "summoner1_id": p.summoner1_id,
             "summoner2_id": p.summoner2_id,
+            "lp_change": p.lp_change,  # +15, -18, 0 en normales
             "badges": calcular_badges(p),
         })
 

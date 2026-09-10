@@ -66,6 +66,11 @@ function PartidaCard({ partida, expandida, onClick, detalle }) {
           </p>
           <p className="text-xs opacity-80 font-stat">{partida.modo_juego}</p>
           <p className="text-xs opacity-70 font-stat">{formatearDuracion(partida.duracion_segundos)}</p>
+          {partida.lp_change !== 0 && (
+            <p className={`text-xs font-stat font-bold ${partida.lp_change > 0 ? "text-yellow-300" : "text-red-200"}`}>
+              {partida.lp_change > 0 ? "+" : ""}{partida.lp_change} LP
+            </p>
+          )}
           <p className="text-xs opacity-70 font-stat">{formatearFecha(partida.fecha)}</p>
         </div>
 

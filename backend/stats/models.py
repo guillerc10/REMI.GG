@@ -82,6 +82,9 @@ class Participante(models.Model):
     quadra_kills = models.IntegerField(default=0)
     penta_kills = models.IntegerField(default=0)
 
+    # Nuevo: LP ganados/perdidos en ranked (puede ser negativo)
+    lp_change = models.IntegerField(default=0)  # +15, -18, 0 en normales
+
     class Meta:
         unique_together = ("partida", "invocador")
 
