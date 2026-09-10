@@ -2,7 +2,8 @@ import { useState } from "react";
 import { champeonImgUrl, itemImgUrl, summonerSpellImgUrl } from "../utils/ddragon";
 import { getPartidaDetalle } from "../services/api";
 import Tooltip from "./Tooltip";
-import { obtenerDatosItem, obtenerDatosHechizo, obtenerImagenLinea, LANE_ORDER } from "../utils/gameData";
+import { obtenerDatosItem, obtenerDatosHechizo, LANE_ORDER } from "../utils/gameData";
+import { obtenerIconoLinea } from "./LaneIcons";
 
 function formatearDuracion(segundos) {
   const min = Math.floor(segundos / 60);
@@ -31,7 +32,7 @@ function formatearModoJuego(modoJuego) {
 }
 
 function FilaJugador({ jugador, esRival }) {
-  const imagenLinea = obtenerImagenLinea(jugador.role);
+  const IconoLinea = obtenerIconoLinea(jugador.role);
 
   return (
     <div className="flex items-center gap-2 text-xs py-1">
@@ -42,13 +43,13 @@ function FilaJugador({ jugador, esRival }) {
           className="w-6 h-6 rounded-full border border-black cursor-help hover:brightness-110 transition"
         />
       </Tooltip>
-      {imagenLinea && (
-        <img
-          src={imagenLinea}
-          alt={jugador.role}
+      {IconoLinea && (
+        <div
           title={jugador.role}
-          className="w-5 h-5 opacity-80 hover:opacity-100 transition cursor-help"
-        />
+          className="w-5 h-5 opacity-70 hover:opacity-100 transition cursor-help text-slate-600"
+        >
+          <IconoLinea />
+        </div>
       )}
       <span className={`flex-1 truncate font-stat ${esRival ? "text-red-300" : "text-remi-gold"}`}>{jugador.riot_id}</span>
       <span className="text-slate-200 w-16 text-right font-stat">{jugador.kills}/{jugador.deaths}/{jugador.assists}</span>

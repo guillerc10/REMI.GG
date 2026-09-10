@@ -189,21 +189,5 @@ export const obtenerDatosHechizo = (spellId) => {
   return datos || null;
 };
 
-// URLs de imágenes de líneas desde DDragon oficial de Riot Games
-const DDRAGON_VERSION = "16.17.1";
-
-export const LANE_IMAGES = {
-  "TOP": `https://ddragon.leagueoflegends.com/cdn/${DDRAGON_VERSION}/img/role/top.png`,
-  "JUNGLE": `https://ddragon.leagueoflegends.com/cdn/${DDRAGON_VERSION}/img/role/jungle.png`,
-  "MIDDLE": `https://ddragon.leagueoflegends.com/cdn/${DDRAGON_VERSION}/img/role/middle.png`,
-  "BOTTOM": `https://ddragon.leagueoflegends.com/cdn/${DDRAGON_VERSION}/img/role/bottom.png`,
-  "UTILITY": `https://ddragon.leagueoflegends.com/cdn/${DDRAGON_VERSION}/img/role/support.png`,
-};
-
 // Orden de las líneas (de arriba a abajo en la interfaz)
 export const LANE_ORDER = ["TOP", "JUNGLE", "MIDDLE", "BOTTOM", "UTILITY"];
-
-// Función para obtener imagen de línea
-export const obtenerImagenLinea = (role) => {
-  return LANE_IMAGES[role] || null;
-};
