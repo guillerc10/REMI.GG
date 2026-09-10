@@ -150,6 +150,25 @@ def calcular_badges(participante):
 
     return badges   
 
+def _traducir_queue_id(queue_id):
+    """
+    Traduce queue_id a nombre de modo de partida más legible.
+    Usa queue_id en lugar de gameMode porque es más confiable.
+    """
+    mapeo = {
+        400: "Normal Draft",      # NORMAL_5x5_DRAFT
+        420: "Solo/Dúo 5v5",      # RANKED_SOLO_5x5
+        430: "Blind Pick",         # NORMAL_5x5_BLIND
+        440: "Flex 5v5",          # RANKED_FLEX_SR
+        450: "ARAM",              # ARAM_5x5
+        700: "Clash",             # CLASH_5x5
+        1020: "One for All",      # ONE_FOR_ALL_5x5
+        1300: "Nexus Blitz",      # NEXUS_BLITZ_5x5
+        1400: "Ultimate Spellbook", # ULTIMATE_SPELLBOOK_5x5
+    }
+    return mapeo.get(queue_id, f"Unknown ({queue_id})")
+
+
 def historial_partidas(invocador, limite=10):
     """
     Devuelve una lista de las últimas partidas del invocador, con detalle completo
@@ -168,7 +187,7 @@ def historial_partidas(invocador, limite=10):
             "match_id": p.partida.match_id,
             "fecha": p.partida.fecha,
             "duracion_segundos": p.partida.duracion_segundos,
-            "modo_juego": p.partida.modo_juego,
+            "modo_juego": _traducir_queue_id(p.partida.queue_id),  # Usar queue_id en lugar de gameMode
             "queue_id": p.partida.queue_id,
             "campeon": p.campeon.nombre if p.campeon else None,
             "kills": p.kills,

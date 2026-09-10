@@ -212,32 +212,33 @@ def _calcular_lp_changes(invocador):
     participaciones_desc = list(reversed(list(participaciones)))
 
     for participante in participaciones_desc:
-        queue_type = _obtener_queue_type_de_modo(participante.partida.modo_juego)
+        queue_type = _obtener_queue_type_de_queue_id(participante.partida.queue_id)
 
         if queue_type and queue_type in lp_acumulado:
             # Estimar LP change basado en victoria/derrota
             lp_change = 15 if participante.win else -15
 
-            # Para Ranked, usar el estimado
-            if "RANKED" in participante.partida.modo_juego:
+            # Para Ranked (queue_id 420, 440, 470), usar el estimado
+            if participante.partida.queue_id in [420, 440, 470]:
                 participante.lp_change = lp_change
                 participante.save()
 
                 # Actualizar LP acumulado (en orden inverso, restamos para ir hacia atrás)
                 lp_acumulado[queue_type] -= lp_change
             else:
-                # Para Normal, dejar en 0
+                # Para Normal/ARAM/otros, dejar en 0
                 participante.lp_change = 0
                 participante.save()
 
 
-def _obtener_queue_type_de_modo(modo_juego):
+def _obtener_queue_type_de_queue_id(queue_id):
     """
-    Mapea el modo_juego de Match-V5 al queue_type de LEAGUE-V4.
+    Mapea queue_id de Match-V5 al queue_type de LEAGUE-V4.
+    Usa queue_id porque gameMode no es confiable.
     """
     mapeo = {
-        "RANKED_SOLO_5x5": "RANKED_SOLO_5x5",
-        "RANKED_FLEX_SR": "RANKED_FLEX_SR",
-        "RANKED_FLEX_TT": "RANKED_FLEX_TT",
+        420: "RANKED_SOLO_5x5",   # Solo/Dúo
+        440: "RANKED_FLEX_SR",    # Flex 5v5
+        470: "RANKED_FLEX_TT",    # Flex 3v3
     }
-    return mapeo.get(modo_juego)
+    return mapeo.get(queue_id)
