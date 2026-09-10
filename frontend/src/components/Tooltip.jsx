@@ -1,7 +1,10 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 
-function Tooltip({ children, title, description, position = "top" }) {
+function Tooltip({ children, title, description, position = "auto" }) {
   const [mostrar, setMostrar] = useState(false);
+  const [posicionActual, setPosicionActual] = useState("bottom");
+  const tooltipRef = useRef(null);
+  const containerRef = useRef(null);
 
   const posiciones = {
     top: "bottom-full left-1/2 -translate-x-1/2 mb-2",
@@ -10,8 +13,42 @@ function Tooltip({ children, title, description, position = "top" }) {
     right: "left-full top-1/2 -translate-y-1/2 ml-2",
   };
 
+  // Detectar mejor posición cuando se muestra
+  useEffect(() => {
+    if (!mostrar || position !== "auto" || !containerRef.current) return;
+
+    setTimeout(() => {
+      const rect = containerRef.current.getBoundingClientRect();
+      const tooltipHeight = 120; // altura aproximada del tooltip
+      const tooltipWidth = 320;  // w-80 = 320px
+
+      // Detectar espacio disponible
+      const espacioArriba = rect.top;
+      const espacioAbajo = window.innerHeight - rect.bottom;
+      const espacioIzquierda = rect.left;
+      const espacioDerecha = window.innerWidth - rect.right;
+
+      // Elegir mejor posición
+      let mejorPosicion = "bottom";
+
+      if (espacioAbajo < tooltipHeight && espacioArriba > tooltipHeight) {
+        mejorPosicion = "top";
+      } else if (espacioAbajo >= tooltipHeight) {
+        mejorPosicion = "bottom";
+      } else if (espacioIzquierda > tooltipWidth) {
+        mejorPosicion = "left";
+      } else if (espacioDerecha > tooltipWidth) {
+        mejorPosicion = "right";
+      }
+
+      setPosicionActual(mejorPosicion);
+    }, 0);
+  }, [mostrar, position]);
+
+  const posicionFinal = position === "auto" ? posicionActual : position;
+
   return (
-    <div className="relative inline-block">
+    <div className="relative inline-block" ref={containerRef}>
       <div
         onMouseEnter={() => setMostrar(true)}
         onMouseLeave={() => setMostrar(false)}
@@ -21,7 +58,8 @@ function Tooltip({ children, title, description, position = "top" }) {
 
       {mostrar && (
         <div
-          className={`absolute ${posiciones[position]} z-50 bg-remi-navy border-2 border-black rounded-sm shadow-lg pointer-events-none w-80`}
+          ref={tooltipRef}
+          className={`absolute ${posiciones[posicionFinal]} z-50 bg-remi-navy border-2 border-black rounded-sm shadow-lg pointer-events-none w-80`}
         >
           <div className="p-3">
             {title && <p className="font-display text-xs text-remi-gold mb-2 break-words">{title}</p>}

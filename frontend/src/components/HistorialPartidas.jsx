@@ -147,7 +147,7 @@ function PartidaCard({ partida, expandida, onClick, detalle }) {
                 key={i}
                 title={datos.nombre}
                 description={datos.descripcion}
-                position="top"
+                position="auto"
               >
                 <img
                   src={url}
