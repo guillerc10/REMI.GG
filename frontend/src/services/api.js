@@ -33,14 +33,4 @@ export const actualizarInvocador = (gameName, tagLine) =>
 export const getPartidaDetalle = (matchId) =>
   api.get(`/partida/${matchId}/`);
 
-export const compararInvocadores = (gameName1, tagLine1, gameName2, tagLine2) =>
-  api.get(`/comparar/`, {
-    params: {
-      game_name_1: gameName1,
-      tag_line_1: tagLine1,
-      game_name_2: gameName2,
-      tag_line_2: tagLine2,
-    },
-  });
-
 export default api;

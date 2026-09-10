@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-function Buscador({ onBuscar }) {
+function Buscador({ onBuscar, onActualizar, actualizando, ultimaBusqueda }) {
   const [riotId, setRiotId] = useState("");
 
   const handleSubmit = (e) => {
@@ -14,7 +14,7 @@ function Buscador({ onBuscar }) {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="flex gap-2 w-full max-w-md">
+    <form onSubmit={handleSubmit} className="flex gap-2 w-full max-w-2xl">
       <input
         type="text"
         value={riotId}
@@ -24,9 +24,17 @@ function Buscador({ onBuscar }) {
       />
       <button
         type="submit"
-        className="px-6 py-2 rounded-lg bg-remi-teal text-white font-semibold hover:bg-remi-navy transition"
+        className="px-6 py-2 rounded-lg bg-remi-teal text-white font-semibold hover:bg-remi-navy transition brutal-btn"
       >
         Buscar
+      </button>
+      <button
+        type="button"
+        onClick={onActualizar}
+        disabled={!ultimaBusqueda || actualizando}
+        className="px-6 py-2 rounded-lg bg-remi-navy text-white font-semibold hover:bg-remi-blue transition brutal-btn disabled:opacity-50 disabled:cursor-not-allowed"
+      >
+        {actualizando ? "..." : "Actualizar"}
       </button>
     </form>
   );

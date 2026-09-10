@@ -101,40 +101,6 @@ def companeros_invocador(request, game_name, tag_line):
         return error
     return Response(companeros_frecuentes(invocador))   
 @api_view(["GET"])
-def comparar_invocadores(request):
-    game_name_1 = request.GET.get("game_name_1")
-    tag_line_1 = request.GET.get("tag_line_1")
-    game_name_2 = request.GET.get("game_name_2")
-    tag_line_2 = request.GET.get("tag_line_2")
-
-    if not all([game_name_1, tag_line_1, game_name_2, tag_line_2]):
-        return Response(
-            {"error": "Faltan parámetros: game_name_1, tag_line_1, game_name_2, tag_line_2"},
-            status=status.HTTP_400_BAD_REQUEST,
-        )
-
-    inv1, error1 = _obtener_invocador_o_sincronizar(game_name_1, tag_line_1)
-    if error1:
-        return error1
-
-    inv2, error2 = _obtener_invocador_o_sincronizar(game_name_2, tag_line_2)
-    if error2:
-        return error2
-
-    return Response({
-        "jugador_1": {
-            "riot_id": inv1.riot_id,
-            "winrate": calcular_winrate(inv1),
-            "kda": calcular_kda_promedio(inv1),
-        },
-        "jugador_2": {
-            "riot_id": inv2.riot_id,
-            "winrate": calcular_winrate(inv2),
-            "kda": calcular_kda_promedio(inv2),
-        },
-    })  
-
-@api_view(["GET"])
 def historial_invocador(request, game_name, tag_line):
     invocador, error = _obtener_invocador_o_sincronizar(game_name, tag_line)
     if error:

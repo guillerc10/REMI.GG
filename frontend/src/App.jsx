@@ -1,13 +1,12 @@
 import { useState } from "react";
 import Buscador from "./components/Buscador";
-import Comparador from "./components/Comparador";
 import HistorialPartidas from "./components/HistorialPartidas";
 import {
   getPerfil, getLigas, getWinrate, getKda, getCampeones,
   getCompaneros, getHistorial, actualizarInvocador,
 } from "./services/api";
-import { tierIconUrl } from "./utils/ddragon";
-import SynthwaveBackground from "./components/SynthwaveBackground";
+import { tierIconUrl, profileIconUrl } from "./utils/ddragon";
+import NeoBrutalBackground from "./components/NeoBrutalBackground";
 import Ticker from "./components/Ticker";
 
 function App() {
@@ -83,11 +82,17 @@ function App() {
 
   return (
     <div className="min-h-screen flex flex-col items-center pt-12 relative overflow-hidden">
-      <SynthwaveBackground />
+      <NeoBrutalBackground />
 
       <div className="w-full flex flex-col items-center gap-6 px-4 z-10 relative flex-grow pb-12">
-        <h1 className="text-6xl md:text-8xl font-display tracking-tight brutal-title text-center mb-4">REMI.GG 🎮</h1>
-        <Buscador onBuscar={handleBuscar} />
+        {/* Título comentado temporalmente para observar mejor el fondo */}
+        {/* <h1 className="text-6xl md:text-8xl font-display tracking-tight brutal-title text-center mb-4">REMI.GG 🎮</h1> */}
+        <Buscador
+          onBuscar={handleBuscar}
+          onActualizar={handleActualizar}
+          actualizando={actualizando}
+          ultimaBusqueda={ultimaBusqueda}
+        />
 
       {cargando && <p className="text-remi-light">Buscando (puede tardar unos segundos)...</p>}
       {error && (
@@ -98,24 +103,24 @@ function App() {
         <div className="w-full max-w-6xl grid grid-cols-1 lg:grid-cols-[320px_1fr] gap-6 items-start">
           {/* Columna izquierda */}
           <div className="flex flex-col gap-6">
-            <div className="brutal-card p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <h2 className="text-2xl font-display">{perfil.riot_id}</h2>
-                  <p className="text-slate-700 font-stat">Nivel {perfil.summoner_level}</p>
+            <div className="brutal-card-static p-6">
+              <div className="flex items-center justify-between gap-4">
+                <div className="flex items-center gap-4">
+                  <img
+                    src={profileIconUrl(perfil.profile_icon_id)}
+                    alt="Icono de invocador"
+                    className="w-16 h-16 rounded-full border-3 border-black"
+                  />
+                  <div>
+                    <h2 className="text-2xl font-display">{perfil.riot_id}</h2>
+                    <p className="text-slate-700 font-stat">Nivel {perfil.summoner_level}</p>
+                  </div>
                 </div>
-                <button
-                  onClick={handleActualizar}
-                  disabled={actualizando}
-                  className="brutal-btn text-xs px-3 py-2 bg-remi-teal disabled:bg-slate-400 text-white font-display"
-                >
-                  {actualizando ? "..." : "Actualizar"}
-                </button>
               </div>
             </div>
 
             {ligas.length > 0 && (
-              <div className="brutal-card p-6">
+              <div className="brutal-card-static p-6">
                 <h3 className="text-sm font-display uppercase tracking-wide mb-3">Ligas</h3>
                 <div className="flex flex-col gap-4">
                   {ligas.map((l, i) => (
@@ -139,7 +144,7 @@ function App() {
             )}
 
             {winrate && kda && (
-              <div className="brutal-card p-6">
+              <div className="brutal-card-static p-6">
                 <div className="flex items-center justify-between mb-2">
                   <h3 className="text-xs font-display uppercase tracking-wide">Rendimiento</h3>
                   <span className="text-xs text-slate-600 font-stat">{winrate.total} partidas</span>
@@ -151,7 +156,7 @@ function App() {
                       <circle cx="32" cy="32" r="28" stroke="#00000022" strokeWidth="6" fill="none" />
                       <circle
                         cx="32" cy="32" r="28"
-                        stroke={winrate.winrate >= 50 ? "#016A70" : "#dc2626"}
+                        stroke={winrate.winrate >= 50 ? "#0052CC" : "#E63946"}
                         strokeWidth="6" fill="none"
                         strokeDasharray={2 * Math.PI * 28}
                         strokeDashoffset={2 * Math.PI * 28 * (1 - winrate.winrate / 100)}
@@ -178,13 +183,13 @@ function App() {
             )}
 
             {companeros.length > 0 && (
-              <div className="brutal-card p-6">
+              <div className="brutal-card-static p-6">
                 <h3 className="text-xs font-display uppercase tracking-wide mb-2">Compañeros frecuentes</h3>
                 <div className="flex flex-col gap-1.5">
                   {companerosVisibles.map((c, i) => (
                     <div key={i} className="flex items-center justify-between text-sm">
                       <span className="text-slate-700 truncate">{c.riot_id}</span>
-                      <span className={`text-xs font-stat font-bold flex-shrink-0 ml-2 ${c.winrate >= 50 ? "text-remi-teal" : "text-red-600"}`}>
+                      <span className={`text-xs font-stat font-bold flex-shrink-0 ml-2 ${c.winrate >= 50 ? "text-blue-600" : "text-red-600"}`} style={{color: c.winrate >= 50 ? "#0052CC" : "#E63946"}}>
                         {c.partidas}p · {c.winrate}%
                       </span>
                     </div>
@@ -232,10 +237,10 @@ function App() {
                 {tabActiva === "campeones" && campeones.length > 0 && (
                   <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
                     {campeones.map((c, i) => (
-                      <div key={i} className="brutal-block bg-white p-3">
+                      <div key={i} className="brutal-block-static bg-white p-3">
                         <p className="font-display text-xs">{c.campeon}</p>
                         <p className="text-slate-600 text-xs font-stat">{c.partidas} partidas</p>
-                        <p className={`text-sm font-stat font-bold ${c.winrate >= 50 ? "text-remi-teal" : "text-red-600"}`}>
+                        <p className={`text-sm font-stat font-bold`} style={{color: c.winrate >= 50 ? "#0052CC" : "#E63946"}}>
                           {c.winrate}% WR
                         </p>
                       </div>
@@ -254,10 +259,6 @@ function App() {
         </div>
       )}
 
-      <div className="w-full h-1 bg-white my-8 max-w-6xl z-10 relative border-b-2 border-black" />
-      <div className="z-10 relative w-full flex justify-center pb-12">
-        <Comparador />
-      </div>
       </div>
       <Ticker />
     </div>

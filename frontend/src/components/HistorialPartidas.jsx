@@ -51,13 +51,14 @@ function DetallePartida({ detalle }) {
 }
 
 function PartidaCard({ partida, expandida, onClick, detalle }) {
-  const bloqueColor = partida.win ? "bg-remi-teal" : "bg-red-700";
+  const bgStyle = { backgroundColor: partida.win ? "#0052CC" : "#E63946" };
 
   return (
     <div>
       <div
         onClick={onClick}
-        className={`brutal-block flex items-center gap-4 p-4 cursor-pointer hover:brightness-110 transition text-white ${bloqueColor}`}
+        className={`brutal-block flex items-center gap-4 p-4 cursor-pointer hover:brightness-110 transition text-white`}
+        style={bgStyle}
       >
         <div className="w-24 flex-shrink-0 text-center">
           <p className="font-display text-sm">
