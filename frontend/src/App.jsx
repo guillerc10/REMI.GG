@@ -209,14 +209,14 @@ function App() {
                 )}
               </div>
             )}
+          </div>
 
+          {/* Columna derecha: Campeones Top + Historial */}
+          <div className="flex flex-col gap-6">
             {campeones.length > 0 && maestrias.length > 0 && (
               <CampeonesTop maestrias={maestrias} campeones={campeones} />
             )}
-          </div>
 
-          {/* Columna derecha: pestañas */}
-          <div className="flex flex-col gap-6">
             <div className="brutal-card overflow-hidden p-0">
               <div className="flex border-b-3 border-black">
                 <button
