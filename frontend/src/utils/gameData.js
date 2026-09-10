@@ -189,19 +189,19 @@ export const obtenerDatosHechizo = (spellId) => {
   return datos || null;
 };
 
-// URLs de imágenes de las líneas desde Community Dragon
-export const LANE_IMAGES = {
-  "TOP": "https://raw.communitydragon.org/latest/plugins/rcp-fe-lol-match-history/global/default/positions/top.png",
-  "JUNGLE": "https://raw.communitydragon.org/latest/plugins/rcp-fe-lol-match-history/global/default/positions/jungle.png",
-  "MIDDLE": "https://raw.communitydragon.org/latest/plugins/rcp-fe-lol-match-history/global/default/positions/middle.png",
-  "BOTTOM": "https://raw.communitydragon.org/latest/plugins/rcp-fe-lol-match-history/global/default/positions/bottom.png",
-  "UTILITY": "https://raw.communitydragon.org/latest/plugins/rcp-fe-lol-match-history/global/default/positions/utility.png",
+// Emojis para representar las líneas - Visualmente claros
+export const LANE_SYMBOLS = {
+  "TOP": "🔺",      // Triángulo apuntando arriba
+  "JUNGLE": "🌳",    // Árbol
+  "MIDDLE": "⚔️",    // Espadas cruzadas
+  "BOTTOM": "🏹",    // Arco
+  "UTILITY": "🛡️",   // Escudo
 };
 
 // Orden de las líneas (de arriba a abajo en la interfaz)
 export const LANE_ORDER = ["TOP", "JUNGLE", "MIDDLE", "BOTTOM", "UTILITY"];
 
-// Función para obtener imagen de línea
-export const obtenerImagenLinea = (role) => {
-  return LANE_IMAGES[role] || null;
+// Función para obtener símbolo de línea
+export const obtenerSimboloLinea = (role) => {
+  return LANE_SYMBOLS[role] || "❓";
 };
