@@ -113,13 +113,21 @@ def maestrias_invocador(request, game_name, tag_line):
     Obtiene las maestrías de campeones del invocador.
     """
     try:
-        invocador = Invocador.objects.get(riot_id=f"{game_name}#{tag_line}")
-        from .services import obtener_maestrias
-        maestrias = obtener_maestrias(invocador.id)  # Usar summoner ID
+        from .services import obtener_summoner, obtener_maestrias
+
+        # Obtener PUUID y luego summoner_id desde Riot API
+        puuid_data = obtener_puuid(game_name, tag_line)
+        puuid = puuid_data['puuid']
+
+        summoner_data = obtener_summoner(puuid)
+        summoner_id = summoner_data['id']  # Este es el ID que necesita Champion-Mastery-V4
+
+        # Obtener maestrías
+        maestrias = obtener_maestrias(summoner_id)
 
         # Procesar y devolver top 3 maestrías con nombre del campeón
         top_maestrias = []
-        for i, maestria in enumerate(maestrias[:3]):
+        for maestria in maestrias[:3]:
             try:
                 campeon = Campeon.objects.get(champion_id=maestria['championId'])
                 top_maestrias.append({
@@ -132,16 +140,9 @@ def maestrias_invocador(request, game_name, tag_line):
                 pass
 
         return Response(top_maestrias)
-    except Invocador.DoesNotExist:
-        return Response(
-            {"error": f"No se encontró el invocador"},
-            status=status.HTTP_404_NOT_FOUND,
-        )
     except Exception as e:
-        return Response(
-            {"error": str(e)},
-            status=status.HTTP_502_BAD_GATEWAY,
-        )
+        # Retornar array vacío si falla (para que no bloquee la UI)
+        return Response([], status=status.HTTP_200_OK)
 
 
 @api_view(["GET"])
