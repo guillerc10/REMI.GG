@@ -104,7 +104,7 @@ function App() {
       )}
 
       {perfil && (
-        <div className="w-full max-w-6xl grid grid-cols-1 lg:grid-cols-[320px_1fr] gap-6 items-start">
+        <div className="w-full max-w-6xl grid grid-cols-1 lg:grid-cols-[320px_1fr] gap-6 items-stretch">
           {/* Columna izquierda - Perfil e Info */}
           <div className="flex flex-col gap-6">
             <div className="brutal-card-static p-6">
