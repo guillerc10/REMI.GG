@@ -15,7 +15,7 @@
 
 body {
   font-family: "Inter", sans-serif;
-  background-color: var(--color-synth-bg);
+  background-color: #000;
   overflow-x: hidden;
   color: white;
 }
@@ -82,50 +82,71 @@ body {
   left: 0;
   width: 100vw;
   height: 100vh;
-  background-color: #050505;
   z-index: 0;
   pointer-events: none;
+  perspective: 400px;
+  /* Máscara mucho más amplia en el centro para crear esa "franja negra" de la que nacen las líneas */
+  mask-image: linear-gradient(to bottom, 
+    rgba(0,0,0,1) 0%, 
+    rgba(0,0,0,1) 15%, 
+    rgba(0,0,0,0) 35%, 
+    rgba(0,0,0,0) 65%, 
+    rgba(0,0,0,1) 85%, 
+    rgba(0,0,0,1) 100%);
+  -webkit-mask-image: linear-gradient(to bottom, 
+    rgba(0,0,0,1) 0%, 
+    rgba(0,0,0,1) 15%, 
+    rgba(0,0,0,0) 35%, 
+    rgba(0,0,0,0) 65%, 
+    rgba(0,0,0,1) 85%, 
+    rgba(0,0,0,1) 100%);
 }
 
 .synthwave-grid {
   position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  height: 50%;
+  top: 50%;
+  left: -50%;
+  width: 200%;
+  height: 100vh;
+  /* Líneas color cyan neón como en el video */
   background-image: 
-    linear-gradient(rgba(255, 255, 255, 0.3) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.3) 1px, transparent 1px);
-  background-size: 60px 60px;
+    linear-gradient(rgba(0, 217, 255, 0.8) 2px, transparent 2px),
+    linear-gradient(90deg, rgba(0, 217, 255, 0.8) 2px, transparent 2px);
+  background-size: 80px 80px;
   background-position: 0 0;
-  transform: perspective(600px) rotateX(60deg) scale(2);
-  transform-origin: bottom center;
-  animation: gridMove 6s linear infinite;
+  /* Rotar desde el centro de la pantalla hacia el espectador */
+  transform-origin: top center;
+  transform: rotateX(75deg);
+  /* Velocidad ajustada para que el loop se vea idéntico */
+  animation: gridMove 2s linear infinite;
+  /* Brillo neón en toda la cuadrícula */
+  filter: drop-shadow(0 0 5px rgba(0, 217, 255, 1));
 }
 
 .synthwave-grid-top {
   position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 50%;
+  bottom: 50%;
+  left: -50%;
+  width: 200%;
+  height: 100vh;
   background-image: 
-    linear-gradient(rgba(255, 255, 255, 0.15) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.15) 1px, transparent 1px);
-  background-size: 60px 60px;
+    linear-gradient(rgba(0, 217, 255, 0.8) 2px, transparent 2px),
+    linear-gradient(90deg, rgba(0, 217, 255, 0.8) 2px, transparent 2px);
+  background-size: 80px 80px;
   background-position: 0 0;
-  transform: perspective(600px) rotateX(-60deg) scale(2);
-  transform-origin: top center;
-  animation: gridMoveTop 6s linear infinite;
+  transform-origin: bottom center;
+  transform: rotateX(-75deg);
+  animation: gridMoveTop 2s linear infinite;
+  filter: drop-shadow(0 0 5px rgba(0, 217, 255, 1));
 }
 
 @keyframes gridMove {
   0% { background-position: 0 0; }
-  100% { background-position: 0 60px; }
+  100% { background-position: 0 80px; }
 }
 @keyframes gridMoveTop {
   0% { background-position: 0 0; }
-  100% { background-position: 0 -60px; }
+  100% { background-position: 0 -80px; }
 }
 
 /* Ticker Animation */
