@@ -13,6 +13,20 @@ function formatearFecha(fechaISO) {
   return fecha.toLocaleDateString("es-ES", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" });
 }
 
+function formatearModoJuego(modoJuego) {
+  // Traduce los modos de juego de Riot API a nombres más legibles
+  const mapeo = {
+    "CLASSIC": "Normal",
+    "RANKED_SOLO_5x5": "Ranked Solo/Dúo",
+    "RANKED_FLEX_SR": "Ranked Flex",
+    "ARAM": "ARAM",
+    "CHERRY": "Arena",
+    "TEAM_BUILDER_DRAFT": "Draft Normal",
+    "TEAM_BUILDER_RANKED_SOLO": "Ranked Solo",
+  };
+  return mapeo[modoJuego] || modoJuego;
+}
+
 function FilaJugador({ jugador, esRival }) {
   return (
     <div className="flex items-center gap-2 text-xs py-1">
@@ -64,13 +78,15 @@ function PartidaCard({ partida, expandida, onClick, detalle }) {
           <p className="font-display text-sm">
             {partida.win ? "VICTORIA" : "DERROTA"}
           </p>
-          <p className="text-xs opacity-80 font-stat">{partida.modo_juego}</p>
+          <p className="text-xs opacity-80 font-stat">{formatearModoJuego(partida.modo_juego)}</p>
           <p className="text-xs opacity-70 font-stat">{formatearDuracion(partida.duracion_segundos)}</p>
-          {partida.lp_change !== 0 && (
-            <p className={`text-xs font-stat font-bold ${partida.lp_change > 0 ? "text-yellow-300" : "text-red-200"}`}>
-              {partida.lp_change > 0 ? "+" : ""}{partida.lp_change} LP
-            </p>
-          )}
+          <p className={`text-xs font-stat font-bold ${
+            partida.lp_change > 0 ? "text-yellow-300" :
+            partida.lp_change < 0 ? "text-red-200" :
+            "text-slate-400"
+          }`}>
+            {partida.lp_change > 0 ? "+" : ""}{partida.lp_change} LP
+          </p>
           <p className="text-xs opacity-70 font-stat">{formatearFecha(partida.fecha)}</p>
         </div>
 
