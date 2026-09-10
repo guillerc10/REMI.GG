@@ -1,8 +1,20 @@
 import { champeonImgUrl } from "../utils/ddragon";
 
 function CampeonesTop({ maestrias, campeones }) {
-  if (!maestrias || maestrias.length === 0) {
+  if (!campeones || campeones.length === 0) {
     return null;
+  }
+
+  // Si no hay maestrias, mostrar mensaje
+  if (!maestrias || maestrias.length === 0) {
+    return (
+      <div className="brutal-card-static p-6">
+        <h3 className="text-xs font-display uppercase tracking-wide mb-4">Campeones Top</h3>
+        <p className="text-xs text-slate-600 font-stat text-center py-4">
+          Cargando información de maestrías...
+        </p>
+      </div>
+    );
   }
 
   // Combinar datos de maestrías con winrate de campeones
