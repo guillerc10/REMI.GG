@@ -359,7 +359,9 @@ function GraficoAnalisis({ detalle, equipo100Ordenado, equipo200Ordenado }) {
   const GraficoMetrica = ({ titulo, data100, data200, colors100, colors200, total100, total200 }) => (
     <div className="bg-black/20 border-2 border-black p-3 rounded-sm">
       <h4 className="text-xs font-display uppercase mb-2 text-slate-300 tracking-wide">{titulo}</h4>
-      <div className="grid grid-cols-2 gap-3">
+
+      {/* Gráficos */}
+      <div className="grid grid-cols-2 gap-3 mb-3">
         {/* Equipo Azul */}
         <div>
           <div className="text-center mb-2">
@@ -412,6 +414,35 @@ function GraficoAnalisis({ detalle, equipo100Ordenado, equipo200Ordenado }) {
               <RechartsTooltip formatter={(value) => formatNum(value)} />
             </PieChart>
           </ResponsiveContainer>
+        </div>
+      </div>
+
+      {/* Tabla de desglose por jugador */}
+      <div className="grid grid-cols-2 gap-3 border-t-2 border-black pt-2 text-xs">
+        {/* Equipo Azul */}
+        <div>
+          <p className="text-remi-gold font-display text-xs mb-1 uppercase">Detalle Azul</p>
+          <div className="space-y-0.5">
+            {data100.map((d, i) => (
+              <div key={i} className="flex justify-between text-slate-300">
+                <span className="truncate">{d.name}</span>
+                <span className="font-bold text-remi-gold ml-2 flex-shrink-0">{formatNum(d.value)}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Equipo Rojo */}
+        <div>
+          <p className="text-red-400 font-display text-xs mb-1 uppercase">Detalle Rojo</p>
+          <div className="space-y-0.5">
+            {data200.map((d, i) => (
+              <div key={i} className="flex justify-between text-slate-300">
+                <span className="truncate">{d.name}</span>
+                <span className="font-bold text-red-400 ml-2 flex-shrink-0">{formatNum(d.value)}</span>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </div>
