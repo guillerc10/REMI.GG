@@ -98,9 +98,9 @@ function DetallePartida({ detalle }) {
           KDA
         </button>
         <button
-          onClick={() => setPestaña("daño")}
+          onClick={() => setPestaña("dano")}
           className={`flex-1 py-2 text-xs font-display uppercase transition border-l-2 border-black ${
-            pestaña === "daño"
+            pestaña === "dano"
               ? "bg-remi-navy text-remi-gold"
               : "text-slate-400 hover:bg-black/10"
           }`}
@@ -108,9 +108,9 @@ function DetallePartida({ detalle }) {
           DAÑO
         </button>
         <button
-          onClick={() => setPestaña("análisis")}
+          onClick={() => setPestaña("analisis")}
           className={`flex-1 py-2 text-xs font-display uppercase transition border-l-2 border-black ${
-            pestaña === "análisis"
+            pestaña === "analisis"
               ? "bg-remi-navy text-remi-gold"
               : "text-slate-400 hover:bg-black/10"
           }`}
@@ -140,7 +140,7 @@ function DetallePartida({ detalle }) {
               ))}
             </div>
           </>
-        ) : pestaña === "daño" ? (
+        ) : pestaña === "dano" ? (
           <>
             <div>
               <p className="text-remi-gold font-display text-xs mb-2">
@@ -175,9 +175,9 @@ function DetallePartida({ detalle }) {
               ))}
             </div>
           </>
-        ) : (
+        ) : pestaña === "analisis" ? (
           <GraficoAnalisis detalle={detalle} equipo100Ordenado={equipo100Ordenado} equipo200Ordenado={equipo200Ordenado} />
-        )}
+        ) : null}
       </div>
     </div>
   );
