@@ -357,24 +357,24 @@ function GraficoAnalisis({ detalle, equipo100Ordenado, equipo200Ordenado }) {
   const dataCS200 = equipo200Ordenado.map((j) => ({ name: j.riot_id.split("#")[0], value: j.cs_total }));
 
   const GraficoMetrica = ({ titulo, data100, data200, colors100, colors200, total100, total200 }) => (
-    <div className="bg-black/20 border-2 border-black p-4 rounded-sm">
-      <h4 className="text-xs font-display uppercase mb-4 text-slate-300 tracking-wide">{titulo}</h4>
-      <div className="grid grid-cols-2 gap-6">
+    <div className="bg-black/20 border-2 border-black p-3 rounded-sm">
+      <h4 className="text-xs font-display uppercase mb-2 text-slate-300 tracking-wide">{titulo}</h4>
+      <div className="grid grid-cols-2 gap-3">
         {/* Equipo Azul */}
         <div>
-          <div className="text-center mb-3">
-            <p className="text-xl font-display text-remi-gold font-bold">{formatNum(total100)}</p>
-            <p className="text-xs text-slate-400 uppercase">Equipo Azul</p>
+          <div className="text-center mb-2">
+            <p className="text-lg font-display text-remi-gold font-bold">{formatNum(total100)}</p>
+            <p className="text-xs text-slate-400">AZUL</p>
           </div>
-          <ResponsiveContainer width="100%" height={220}>
+          <ResponsiveContainer width="100%" height={160}>
             <PieChart>
               <Pie
                 data={data100}
                 cx="50%"
                 cy="50%"
-                labelLine={true}
-                label={({ name, percent }) => `${percent > 10 ? name : ""}`}
-                outerRadius={70}
+                labelLine={false}
+                label={({ percent }) => `${percent > 12 ? `${(percent * 100).toFixed(0)}%` : ""}`}
+                outerRadius={50}
                 fill="#8884d8"
                 dataKey="value"
               >
@@ -382,26 +382,26 @@ function GraficoAnalisis({ detalle, equipo100Ordenado, equipo200Ordenado }) {
                   <Cell key={`cell-${index}`} fill={colors100[index % colors100.length]} />
                 ))}
               </Pie>
-              <RechartsTooltip formatter={(value) => [formatNum(value), "Cantidad"]} />
+              <RechartsTooltip formatter={(value) => formatNum(value)} />
             </PieChart>
           </ResponsiveContainer>
         </div>
 
         {/* Equipo Rojo */}
         <div>
-          <div className="text-center mb-3">
-            <p className="text-xl font-display text-red-400 font-bold">{formatNum(total200)}</p>
-            <p className="text-xs text-slate-400 uppercase">Equipo Rojo</p>
+          <div className="text-center mb-2">
+            <p className="text-lg font-display text-red-400 font-bold">{formatNum(total200)}</p>
+            <p className="text-xs text-slate-400">ROJO</p>
           </div>
-          <ResponsiveContainer width="100%" height={220}>
+          <ResponsiveContainer width="100%" height={160}>
             <PieChart>
               <Pie
                 data={data200}
                 cx="50%"
                 cy="50%"
-                labelLine={true}
-                label={({ name, percent }) => `${percent > 10 ? name : ""}`}
-                outerRadius={70}
+                labelLine={false}
+                label={({ percent }) => `${percent > 12 ? `${(percent * 100).toFixed(0)}%` : ""}`}
+                outerRadius={50}
                 fill="#8884d8"
                 dataKey="value"
               >
@@ -409,7 +409,7 @@ function GraficoAnalisis({ detalle, equipo100Ordenado, equipo200Ordenado }) {
                   <Cell key={`cell-${index}`} fill={colors200[index % colors200.length]} />
                 ))}
               </Pie>
-              <RechartsTooltip formatter={(value) => [formatNum(value), "Cantidad"]} />
+              <RechartsTooltip formatter={(value) => formatNum(value)} />
             </PieChart>
           </ResponsiveContainer>
         </div>
@@ -418,8 +418,8 @@ function GraficoAnalisis({ detalle, equipo100Ordenado, equipo200Ordenado }) {
   );
 
   return (
-    <div className="p-4 text-white space-y-4 max-h-[calc(100vh-400px)] overflow-y-auto">
-      <div className="grid grid-cols-1 gap-4">
+    <div className="p-4 text-white">
+      <div className="grid grid-cols-2 gap-4">
         <GraficoMetrica
           titulo="💰 ORO"
           data100={dataOro100}
