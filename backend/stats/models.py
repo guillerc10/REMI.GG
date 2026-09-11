@@ -88,6 +88,11 @@ class Participante(models.Model):
     # Nuevo: Daño a campeones enemigos
     damage_to_champions = models.IntegerField(default=0)
 
+    # Nuevo: Oro, wards y estadísticas de visión
+    gold_earned = models.IntegerField(default=0)
+    wards_placed = models.IntegerField(default=0)
+    wards_destroyed = models.IntegerField(default=0)
+
     class Meta:
         unique_together = ("partida", "invocador")
 

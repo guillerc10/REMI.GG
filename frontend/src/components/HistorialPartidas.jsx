@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip as RechartsTooltip } from "recharts";
 import { champeonImgUrl, itemImgUrl, summonerSpellImgUrl } from "../utils/ddragon";
 import { getPartidaDetalle } from "../services/api";
 import Tooltip from "./Tooltip";
@@ -106,6 +107,16 @@ function DetallePartida({ detalle }) {
         >
           DAÑO
         </button>
+        <button
+          onClick={() => setPestaña("análisis")}
+          className={`flex-1 py-2 text-xs font-display uppercase transition border-l-2 border-black ${
+            pestaña === "análisis"
+              ? "bg-remi-navy text-remi-gold"
+              : "text-slate-400 hover:bg-black/10"
+          }`}
+        >
+          ANÁLISIS
+        </button>
       </div>
 
       {/* Contenido de pestañas */}
@@ -129,7 +140,7 @@ function DetallePartida({ detalle }) {
               ))}
             </div>
           </>
-        ) : (
+        ) : pestaña === "daño" ? (
           <>
             <div>
               <p className="text-remi-gold font-display text-xs mb-2">
@@ -164,6 +175,8 @@ function DetallePartida({ detalle }) {
               ))}
             </div>
           </>
+        ) : (
+          <GraficoAnalisis detalle={detalle} equipo100Ordenado={equipo100Ordenado} equipo200Ordenado={equipo200Ordenado} />
         )}
       </div>
     </div>
@@ -317,6 +330,174 @@ function HistorialPartidas({ partidas, sinTarjeta }) {
     <div className="brutal-card p-6">
       <h3 className="text-sm font-display uppercase tracking-wide mb-3">Historial de partidas</h3>
       {lista}
+    </div>
+  );
+}
+
+// Componente de gráficos de análisis
+function GraficoAnalisis({ detalle, equipo100Ordenado, equipo200Ordenado }) {
+  const COLORS_BLUE = ["#0052CC", "#3B82F6", "#60A5FA", "#93C5FD", "#DBEAFE"];
+  const COLORS_RED = ["#E63946", "#F87171", "#FCA5A5", "#FECACA", "#FEE2E2"];
+
+  // Función para formatear números
+  const formatNum = (num) => {
+    if (num >= 1000000) return (num / 1000000).toFixed(1) + "M";
+    if (num >= 1000) return (num / 1000).toFixed(1) + "K";
+    return num.toString();
+  };
+
+  // Preparar datos para gráficos - ORO
+  const dataOro100 = equipo100Ordenado.map((j) => ({
+    name: j.riot_id.split("#")[0],
+    value: j.gold_earned,
+  }));
+  const dataOro200 = equipo200Ordenado.map((j) => ({
+    name: j.riot_id.split("#")[0],
+    value: j.gold_earned,
+  }));
+
+  // Preparar datos para gráficos - DAÑO
+  const dataDano100 = equipo100Ordenado.map((j) => ({
+    name: j.riot_id.split("#")[0],
+    value: j.damage_to_champions,
+  }));
+  const dataDano200 = equipo200Ordenado.map((j) => ({
+    name: j.riot_id.split("#")[0],
+    value: j.damage_to_champions,
+  }));
+
+  // Preparar datos para gráficos - WARDS COLOCADOS
+  const dataWardsPlaced100 = equipo100Ordenado.map((j) => ({
+    name: j.riot_id.split("#")[0],
+    value: j.wards_placed,
+  }));
+  const dataWardsPlaced200 = equipo200Ordenado.map((j) => ({
+    name: j.riot_id.split("#")[0],
+    value: j.wards_destroyed,
+  }));
+
+  // Preparar datos para gráficos - WARDS DESTRUIDOS
+  const dataWardsDestroyed100 = equipo100Ordenado.map((j) => ({
+    name: j.riot_id.split("#")[0],
+    value: j.wards_destroyed,
+  }));
+  const dataWardsDestroyed200 = equipo200Ordenado.map((j) => ({
+    name: j.riot_id.split("#")[0],
+    value: j.wards_destroyed,
+  }));
+
+  // Preparar datos para gráficos - CS
+  const dataCS100 = equipo100Ordenado.map((j) => ({
+    name: j.riot_id.split("#")[0],
+    value: j.cs_total,
+  }));
+  const dataCS200 = equipo200Ordenado.map((j) => ({
+    name: j.riot_id.split("#")[0],
+    value: j.cs_total,
+  }));
+
+  const GraficoMetrica = ({ titulo, data100, data200, colors100, colors200, total100, total200 }) => (
+    <div className="border-b-2 border-black pb-4 mb-4 last:border-0">
+      <p className="text-xs font-display uppercase mb-3 text-slate-300">{titulo}</p>
+      <div className="grid grid-cols-2 gap-4">
+        {/* Equipo Azul */}
+        <div className="text-center">
+          <p className="text-remi-gold text-xs mb-2">AZUL — {formatNum(total100)}</p>
+          <ResponsiveContainer width="100%" height={200}>
+            <PieChart>
+              <Pie
+                data={data100}
+                cx="50%"
+                cy="50%"
+                labelLine={false}
+                label={({ name, value }) => `${name}\n${formatNum(value)}`}
+                outerRadius={60}
+                fill="#8884d8"
+                dataKey="value"
+              >
+                {data100.map((entry, index) => (
+                  <Cell key={`cell-${index}`} fill={colors100[index % colors100.length]} />
+                ))}
+              </Pie>
+              <RechartsTooltip formatter={(value) => formatNum(value)} />
+            </PieChart>
+          </ResponsiveContainer>
+        </div>
+
+        {/* Equipo Rojo */}
+        <div className="text-center">
+          <p className="text-red-400 text-xs mb-2">ROJO — {formatNum(total200)}</p>
+          <ResponsiveContainer width="100%" height={200}>
+            <PieChart>
+              <Pie
+                data={data200}
+                cx="50%"
+                cy="50%"
+                labelLine={false}
+                label={({ name, value }) => `${name}\n${formatNum(value)}`}
+                outerRadius={60}
+                fill="#8884d8"
+                dataKey="value"
+              >
+                {data200.map((entry, index) => (
+                  <Cell key={`cell-${index}`} fill={colors200[index % colors200.length]} />
+                ))}
+              </Pie>
+              <RechartsTooltip formatter={(value) => formatNum(value)} />
+            </PieChart>
+          </ResponsiveContainer>
+        </div>
+      </div>
+    </div>
+  );
+
+  return (
+    <div className="p-4 text-white text-sm">
+      <GraficoMetrica
+        titulo="ORO"
+        data100={dataOro100}
+        data200={dataOro200}
+        colors100={COLORS_BLUE}
+        colors200={COLORS_RED}
+        total100={detalle.equipo_100.score.gold}
+        total200={detalle.equipo_200.score.gold}
+      />
+      <GraficoMetrica
+        titulo="DAÑO A CAMPEONES"
+        data100={dataDano100}
+        data200={dataDano200}
+        colors100={COLORS_BLUE}
+        colors200={COLORS_RED}
+        total100={detalle.equipo_100.score.damage}
+        total200={detalle.equipo_200.score.damage}
+      />
+      <GraficoMetrica
+        titulo="WARDS COLOCADOS"
+        data100={dataWardsPlaced100}
+        data200={dataWardsPlaced200}
+        colors100={COLORS_BLUE}
+        colors200={COLORS_RED}
+        total100={detalle.equipo_100.score.wards_placed}
+        total200={detalle.equipo_200.score.wards_placed}
+      />
+      <GraficoMetrica
+        titulo="WARDS DESTRUIDOS"
+        data100={dataWardsDestroyed100}
+        data200={dataWardsDestroyed200}
+        colors100={COLORS_BLUE}
+        colors200={COLORS_RED}
+        total100={detalle.equipo_100.score.wards_destroyed}
+        total200={detalle.equipo_200.score.wards_destroyed}
+      />
+      <GraficoMetrica
+        titulo="MINIONS (CS)"
+        data100={dataCS100}
+        data200={dataCS200}
+        colors100={COLORS_BLUE}
+        colors200={COLORS_RED}
+        total100={detalle.equipo_100.score.cs}
+        total200={detalle.equipo_200.score.cs}
+      />
     </div>
   );
 }
