@@ -167,6 +167,7 @@ def sincronizar_partida(match_id):
                 "quadra_kills": p["quadraKills"],
                 "penta_kills": p["pentaKills"],
                 "lp_change": 0,  # Inicialmente 0 (se puede completar con datos externos si es necesario)
+                "damage_to_champions": p.get("totalDamageDealtToChampions", 0),
             },
         )
 

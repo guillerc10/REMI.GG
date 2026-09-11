@@ -59,6 +59,8 @@ function FilaJugador({ jugador, esRival }) {
 }
 
 function DetallePartida({ detalle }) {
+  const [pestaña, setPestaña] = useState("kda");
+
   if (!detalle) return <p className="text-slate-300 text-sm p-4">Cargando detalle...</p>;
 
   // Función para ordenar jugadores por rol
@@ -73,23 +75,96 @@ function DetallePartida({ detalle }) {
   const equipo100Ordenado = ordenarPorRol(detalle.equipo_100.jugadores);
   const equipo200Ordenado = ordenarPorRol(detalle.equipo_200.jugadores);
 
+  // Función para formatear números grandes (ej: 15234 → 15.2K)
+  const formatearDano = (damage) => {
+    if (damage >= 1000000) return (damage / 1000000).toFixed(1) + "M";
+    if (damage >= 1000) return (damage / 1000).toFixed(1) + "K";
+    return damage.toString();
+  };
+
   return (
-    <div className="bg-remi-navy border-3 border-black mt-2 grid grid-cols-1 md:grid-cols-2 gap-4 p-4">
-      <div>
-        <p className="text-remi-gold font-display text-xs mb-2">
-          EQUIPO AZUL — {detalle.equipo_100.score.kills}/{detalle.equipo_100.score.deaths}/{detalle.equipo_100.score.assists}
-        </p>
-        {equipo100Ordenado.map((j, i) => (
-          <FilaJugador key={i} jugador={j} esRival={false} />
-        ))}
+    <div className="bg-remi-navy border-3 border-black mt-2">
+      {/* Pestañas */}
+      <div className="flex border-b-2 border-black">
+        <button
+          onClick={() => setPestaña("kda")}
+          className={`flex-1 py-2 text-xs font-display uppercase transition ${
+            pestaña === "kda"
+              ? "bg-remi-navy text-remi-gold"
+              : "text-slate-400 hover:bg-black/10"
+          }`}
+        >
+          KDA
+        </button>
+        <button
+          onClick={() => setPestaña("daño")}
+          className={`flex-1 py-2 text-xs font-display uppercase transition border-l-2 border-black ${
+            pestaña === "daño"
+              ? "bg-remi-navy text-remi-gold"
+              : "text-slate-400 hover:bg-black/10"
+          }`}
+        >
+          DAÑO
+        </button>
       </div>
-      <div>
-        <p className="text-red-400 font-display text-xs mb-2">
-          EQUIPO ROJO — {detalle.equipo_200.score.kills}/{detalle.equipo_200.score.deaths}/{detalle.equipo_200.score.assists}
-        </p>
-        {equipo200Ordenado.map((j, i) => (
-          <FilaJugador key={i} jugador={j} esRival={true} />
-        ))}
+
+      {/* Contenido de pestañas */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4">
+        {pestaña === "kda" ? (
+          <>
+            <div>
+              <p className="text-remi-gold font-display text-xs mb-2">
+                EQUIPO AZUL — {detalle.equipo_100.score.kills}/{detalle.equipo_100.score.deaths}/{detalle.equipo_100.score.assists}
+              </p>
+              {equipo100Ordenado.map((j, i) => (
+                <FilaJugador key={i} jugador={j} esRival={false} />
+              ))}
+            </div>
+            <div>
+              <p className="text-red-400 font-display text-xs mb-2">
+                EQUIPO ROJO — {detalle.equipo_200.score.kills}/{detalle.equipo_200.score.deaths}/{detalle.equipo_200.score.assists}
+              </p>
+              {equipo200Ordenado.map((j, i) => (
+                <FilaJugador key={i} jugador={j} esRival={true} />
+              ))}
+            </div>
+          </>
+        ) : (
+          <>
+            <div>
+              <p className="text-remi-gold font-display text-xs mb-2">
+                EQUIPO AZUL — {formatearDano(detalle.equipo_100.score.damage)} DMG
+              </p>
+              {equipo100Ordenado.map((j, i) => (
+                <div key={i} className="flex items-center gap-2 text-xs py-1">
+                  <img
+                    src={champeonImgUrl(j.campeon)}
+                    alt={j.campeon}
+                    className="w-6 h-6 rounded-full border border-black flex-shrink-0"
+                  />
+                  <span className="flex-1 truncate font-stat text-remi-gold">{j.riot_id}</span>
+                  <span className="text-slate-200 font-stat font-bold">{formatearDano(j.damage_to_champions)} DMG</span>
+                </div>
+              ))}
+            </div>
+            <div>
+              <p className="text-red-400 font-display text-xs mb-2">
+                EQUIPO ROJO — {formatearDano(detalle.equipo_200.score.damage)} DMG
+              </p>
+              {equipo200Ordenado.map((j, i) => (
+                <div key={i} className="flex items-center gap-2 text-xs py-1">
+                  <img
+                    src={champeonImgUrl(j.campeon)}
+                    alt={j.campeon}
+                    className="w-6 h-6 rounded-full border border-black flex-shrink-0"
+                  />
+                  <span className="flex-1 truncate font-stat text-red-300">{j.riot_id}</span>
+                  <span className="text-slate-200 font-stat font-bold">{formatearDano(j.damage_to_champions)} DMG</span>
+                </div>
+              ))}
+            </div>
+          </>
+        )}
       </div>
     </div>
   );

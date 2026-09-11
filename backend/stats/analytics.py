@@ -224,7 +224,7 @@ def detalle_partida(match_id):
     )
 
     equipos = {100: [], 200: []}
-    score = {100: {"kills": 0, "deaths": 0, "assists": 0}, 200: {"kills": 0, "deaths": 0, "assists": 0}}
+    score = {100: {"kills": 0, "deaths": 0, "assists": 0, "damage": 0}, 200: {"kills": 0, "deaths": 0, "assists": 0, "damage": 0}}
 
     for p in participantes:
         equipos[p.team_id].append({
@@ -235,6 +235,7 @@ def detalle_partida(match_id):
             "deaths": p.deaths,
             "assists": p.assists,
             "cs_total": p.cs_total,
+            "damage_to_champions": p.damage_to_champions,
             "items": [p.item0, p.item1, p.item2, p.item3, p.item4, p.item5, p.item6],
             "summoner1_id": p.summoner1_id,
             "summoner2_id": p.summoner2_id,
@@ -244,6 +245,7 @@ def detalle_partida(match_id):
         score[p.team_id]["kills"] += p.kills
         score[p.team_id]["deaths"] += p.deaths
         score[p.team_id]["assists"] += p.assists
+        score[p.team_id]["damage"] += p.damage_to_champions
 
     return {
         "match_id": partida.match_id,

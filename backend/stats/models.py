@@ -85,6 +85,9 @@ class Participante(models.Model):
     # Nuevo: LP ganados/perdidos en ranked (puede ser negativo)
     lp_change = models.IntegerField(default=0)  # +15, -18, 0 en normales
 
+    # Nuevo: Daño a campeones enemigos
+    damage_to_champions = models.IntegerField(default=0)
+
     class Meta:
         unique_together = ("partida", "invocador")
 
