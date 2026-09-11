@@ -357,91 +357,96 @@ function GraficoAnalisis({ detalle, equipo100Ordenado, equipo200Ordenado }) {
   const dataCS200 = equipo200Ordenado.map((j) => ({ name: j.riot_id.split("#")[0], value: j.cs_total }));
 
   const GraficoMetrica = ({ titulo, data100, data200, colors100, colors200, total100, total200 }) => (
-    <div className="bg-black/20 border-2 border-black p-3 rounded-sm">
-      <h4 className="text-xs font-display uppercase mb-2 text-slate-300 tracking-wide">{titulo}</h4>
+    <div className="bg-black/20 border-2 border-black p-4 rounded-sm">
+      <h4 className="text-xs font-display uppercase mb-3 text-slate-300 tracking-wide font-bold">{titulo}</h4>
 
-      {/* Gráficos */}
-      <div className="grid grid-cols-2 gap-3 mb-3">
-        {/* Equipo Azul */}
-        <div>
-          <div className="text-center mb-2">
-            <p className="text-lg font-display text-remi-gold font-bold">{formatNum(total100)}</p>
-            <p className="text-xs text-slate-400">AZUL</p>
+      {/* Gráficos + Tablas lado a lado */}
+      <div className="grid grid-cols-2 gap-4">
+        {/* EQUIPO AZUL */}
+        <div className="flex flex-col">
+          <div className="text-center mb-3">
+            <p className="text-2xl font-display text-remi-gold font-bold">{formatNum(total100)}</p>
+            <p className="text-xs text-slate-400 uppercase tracking-wide">Equipo Azul</p>
           </div>
-          <ResponsiveContainer width="100%" height={160}>
-            <PieChart>
-              <Pie
-                data={data100}
-                cx="50%"
-                cy="50%"
-                labelLine={false}
-                label={({ percent }) => `${percent > 12 ? `${(percent * 100).toFixed(0)}%` : ""}`}
-                outerRadius={50}
-                fill="#8884d8"
-                dataKey="value"
-              >
-                {data100.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={colors100[index % colors100.length]} />
-                ))}
-              </Pie>
-              <RechartsTooltip formatter={(value) => formatNum(value)} />
-            </PieChart>
-          </ResponsiveContainer>
-        </div>
 
-        {/* Equipo Rojo */}
-        <div>
-          <div className="text-center mb-2">
-            <p className="text-lg font-display text-red-400 font-bold">{formatNum(total200)}</p>
-            <p className="text-xs text-slate-400">ROJO</p>
+          {/* Gráfico Azul */}
+          <div className="flex-1 flex items-center justify-center mb-3">
+            <ResponsiveContainer width="100%" height={220}>
+              <PieChart>
+                <Pie
+                  data={data100}
+                  cx="50%"
+                  cy="50%"
+                  labelLine={false}
+                  label={({ percent }) => `${percent > 15 ? `${(percent * 100).toFixed(0)}%` : ""}`}
+                  outerRadius={65}
+                  fill="#8884d8"
+                  dataKey="value"
+                >
+                  {data100.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={colors100[index % colors100.length]} />
+                  ))}
+                </Pie>
+                <RechartsTooltip formatter={(value) => formatNum(value)} />
+              </PieChart>
+            </ResponsiveContainer>
           </div>
-          <ResponsiveContainer width="100%" height={160}>
-            <PieChart>
-              <Pie
-                data={data200}
-                cx="50%"
-                cy="50%"
-                labelLine={false}
-                label={({ percent }) => `${percent > 12 ? `${(percent * 100).toFixed(0)}%` : ""}`}
-                outerRadius={50}
-                fill="#8884d8"
-                dataKey="value"
-              >
-                {data200.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={colors200[index % colors200.length]} />
-                ))}
-              </Pie>
-              <RechartsTooltip formatter={(value) => formatNum(value)} />
-            </PieChart>
-          </ResponsiveContainer>
-        </div>
-      </div>
 
-      {/* Tabla de desglose por jugador */}
-      <div className="grid grid-cols-2 gap-3 border-t-2 border-black pt-2 text-xs">
-        {/* Equipo Azul */}
-        <div>
-          <p className="text-remi-gold font-display text-xs mb-1 uppercase">Detalle Azul</p>
-          <div className="space-y-0.5">
-            {data100.map((d, i) => (
-              <div key={i} className="flex justify-between text-slate-300">
-                <span className="truncate">{d.name}</span>
-                <span className="font-bold text-remi-gold ml-2 flex-shrink-0">{formatNum(d.value)}</span>
-              </div>
-            ))}
+          {/* Tabla Azul */}
+          <div className="border-t-2 border-black pt-2">
+            <p className="text-remi-gold font-display text-xs mb-2 uppercase font-bold">Desglose</p>
+            <div className="space-y-1">
+              {data100.map((d, i) => (
+                <div key={i} className="flex justify-between text-xs">
+                  <span className="truncate text-slate-300">{d.name}</span>
+                  <span className="font-bold text-remi-gold ml-2 flex-shrink-0">{formatNum(d.value)}</span>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
 
-        {/* Equipo Rojo */}
-        <div>
-          <p className="text-red-400 font-display text-xs mb-1 uppercase">Detalle Rojo</p>
-          <div className="space-y-0.5">
-            {data200.map((d, i) => (
-              <div key={i} className="flex justify-between text-slate-300">
-                <span className="truncate">{d.name}</span>
-                <span className="font-bold text-red-400 ml-2 flex-shrink-0">{formatNum(d.value)}</span>
-              </div>
-            ))}
+        {/* EQUIPO ROJO */}
+        <div className="flex flex-col">
+          <div className="text-center mb-3">
+            <p className="text-2xl font-display text-red-400 font-bold">{formatNum(total200)}</p>
+            <p className="text-xs text-slate-400 uppercase tracking-wide">Equipo Rojo</p>
+          </div>
+
+          {/* Gráfico Rojo */}
+          <div className="flex-1 flex items-center justify-center mb-3">
+            <ResponsiveContainer width="100%" height={220}>
+              <PieChart>
+                <Pie
+                  data={data200}
+                  cx="50%"
+                  cy="50%"
+                  labelLine={false}
+                  label={({ percent }) => `${percent > 15 ? `${(percent * 100).toFixed(0)}%` : ""}`}
+                  outerRadius={65}
+                  fill="#8884d8"
+                  dataKey="value"
+                >
+                  {data200.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={colors200[index % colors200.length]} />
+                  ))}
+                </Pie>
+                <RechartsTooltip formatter={(value) => formatNum(value)} />
+              </PieChart>
+            </ResponsiveContainer>
+          </div>
+
+          {/* Tabla Rojo */}
+          <div className="border-t-2 border-black pt-2">
+            <p className="text-red-400 font-display text-xs mb-2 uppercase font-bold">Desglose</p>
+            <div className="space-y-1">
+              {data200.map((d, i) => (
+                <div key={i} className="flex justify-between text-xs">
+                  <span className="truncate text-slate-300">{d.name}</span>
+                  <span className="font-bold text-red-400 ml-2 flex-shrink-0">{formatNum(d.value)}</span>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </div>
